@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+
+  --color-yellow: #ffc105;
+  --color-yellow-deep: #e8a200;
+  --color-yellow-ink: #5a4500;
+  --color-cream: #fff6dd;
+  --color-cream-2: #fdf0cc;
+
+  --color-ink: #111111;
+  --color-ink-2: #4a4a4a;
+  --color-ink-3: #7a7a7a;
+  --color-ink-4: #a8a8a8;
+
+  --color-line: #eaeaea;
+  --color-line-2: #f2f2f2;
+  --color-surface: #ffffff;
+  --color-surface-2: #fafafa;
+  --color-surface-3: #f4f4f4;
+  --color-canvas: #ececec;
+
+  --color-green: #10a452;
+  --color-green-bg: #e7f6ee;
+  --color-amber: #b7791f;
+  --color-amber-bg: #fcefd6;
+  --color-red: #d64545;
+  --color-red-bg: #fbe9e9;
+  --color-blue: #2563c9;
+  --color-blue-bg: #e8f0fd;
+  --color-violet: #7c5cd6;
+  --color-violet-bg: #f0ebfb;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-surface-2);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.tnum { font-variant-numeric: tabular-nums; }
