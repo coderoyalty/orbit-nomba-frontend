@@ -5,7 +5,7 @@ import { subscribersApi, formatNaira, STATE_META } from "../lib/api";
 import { PageHeader, Card, Badge, Button } from "../components/ui";
 import { useProjects } from "../components/ProjectContext";
 
-export const Route = createFileRoute("/app/subscribers")({
+export const Route = createFileRoute("/app/subscribers/")({
   component: SubscribersPage,
 });
 

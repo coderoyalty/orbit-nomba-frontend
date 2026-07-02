@@ -19,12 +19,12 @@ import { Route as RecoverTokenRouteImport } from "./routes/recover.$token"
 import { Route as PortalTokenRouteImport } from "./routes/portal.$token"
 import { Route as CheckoutSessionRouteImport } from "./routes/checkout.$session"
 import { Route as AppWebhooksRouteImport } from "./routes/app.webhooks"
-import { Route as AppSubscribersRouteImport } from "./routes/app.subscribers"
 import { Route as AppPlansRouteImport } from "./routes/app.plans"
 import { Route as AppInvoicesRouteImport } from "./routes/app.invoices"
 import { Route as AppDunningRouteImport } from "./routes/app.dunning"
 import { Route as AppBillingRouteImport } from "./routes/app.billing"
 import { Route as AppApiKeysRouteImport } from "./routes/app.api-keys"
+import { Route as AppSubscribersIndexRouteImport } from "./routes/app.subscribers.index"
 import { Route as AppProjectsIndexRouteImport } from "./routes/app.projects.index"
 import { Route as AppSubscribersIdRouteImport } from "./routes/app.subscribers.$id"
 import { Route as AppSettingsPayoutsRouteImport } from "./routes/app.settings.payouts"
@@ -80,11 +80,6 @@ const AppWebhooksRoute = AppWebhooksRouteImport.update({
   path: "/webhooks",
   getParentRoute: () => AppRoute,
 } as any)
-const AppSubscribersRoute = AppSubscribersRouteImport.update({
-  id: "/subscribers",
-  path: "/subscribers",
-  getParentRoute: () => AppRoute,
-} as any)
 const AppPlansRoute = AppPlansRouteImport.update({
   id: "/plans",
   path: "/plans",
@@ -110,15 +105,20 @@ const AppApiKeysRoute = AppApiKeysRouteImport.update({
   path: "/api-keys",
   getParentRoute: () => AppRoute,
 } as any)
+const AppSubscribersIndexRoute = AppSubscribersIndexRouteImport.update({
+  id: "/subscribers/",
+  path: "/subscribers/",
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
   id: "/projects/",
   path: "/projects/",
   getParentRoute: () => AppRoute,
 } as any)
 const AppSubscribersIdRoute = AppSubscribersIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
-  getParentRoute: () => AppSubscribersRoute,
+  id: "/subscribers/$id",
+  path: "/subscribers/$id",
+  getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsPayoutsRoute = AppSettingsPayoutsRouteImport.update({
   id: "/settings/payouts",
@@ -141,7 +141,6 @@ export interface FileRoutesByFullPath {
   "/app/dunning": typeof AppDunningRoute
   "/app/invoices": typeof AppInvoicesRoute
   "/app/plans": typeof AppPlansRoute
-  "/app/subscribers": typeof AppSubscribersRouteWithChildren
   "/app/webhooks": typeof AppWebhooksRoute
   "/checkout/$session": typeof CheckoutSessionRoute
   "/portal/$token": typeof PortalTokenRoute
@@ -152,6 +151,7 @@ export interface FileRoutesByFullPath {
   "/app/settings/payouts": typeof AppSettingsPayoutsRoute
   "/app/subscribers/$id": typeof AppSubscribersIdRoute
   "/app/projects/": typeof AppProjectsIndexRoute
+  "/app/subscribers/": typeof AppSubscribersIndexRoute
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute
@@ -162,7 +162,6 @@ export interface FileRoutesByTo {
   "/app/dunning": typeof AppDunningRoute
   "/app/invoices": typeof AppInvoicesRoute
   "/app/plans": typeof AppPlansRoute
-  "/app/subscribers": typeof AppSubscribersRouteWithChildren
   "/app/webhooks": typeof AppWebhooksRoute
   "/checkout/$session": typeof CheckoutSessionRoute
   "/portal/$token": typeof PortalTokenRoute
@@ -173,6 +172,7 @@ export interface FileRoutesByTo {
   "/app/settings/payouts": typeof AppSettingsPayoutsRoute
   "/app/subscribers/$id": typeof AppSubscribersIdRoute
   "/app/projects": typeof AppProjectsIndexRoute
+  "/app/subscribers": typeof AppSubscribersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -185,7 +185,6 @@ export interface FileRoutesById {
   "/app/dunning": typeof AppDunningRoute
   "/app/invoices": typeof AppInvoicesRoute
   "/app/plans": typeof AppPlansRoute
-  "/app/subscribers": typeof AppSubscribersRouteWithChildren
   "/app/webhooks": typeof AppWebhooksRoute
   "/checkout/$session": typeof CheckoutSessionRoute
   "/portal/$token": typeof PortalTokenRoute
@@ -196,6 +195,7 @@ export interface FileRoutesById {
   "/app/settings/payouts": typeof AppSettingsPayoutsRoute
   "/app/subscribers/$id": typeof AppSubscribersIdRoute
   "/app/projects/": typeof AppProjectsIndexRoute
+  "/app/subscribers/": typeof AppSubscribersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -209,7 +209,6 @@ export interface FileRouteTypes {
     | "/app/dunning"
     | "/app/invoices"
     | "/app/plans"
-    | "/app/subscribers"
     | "/app/webhooks"
     | "/checkout/$session"
     | "/portal/$token"
@@ -220,6 +219,7 @@ export interface FileRouteTypes {
     | "/app/settings/payouts"
     | "/app/subscribers/$id"
     | "/app/projects/"
+    | "/app/subscribers/"
   fileRoutesByTo: FileRoutesByTo
   to:
     | "/"
@@ -230,7 +230,6 @@ export interface FileRouteTypes {
     | "/app/dunning"
     | "/app/invoices"
     | "/app/plans"
-    | "/app/subscribers"
     | "/app/webhooks"
     | "/checkout/$session"
     | "/portal/$token"
@@ -241,6 +240,7 @@ export interface FileRouteTypes {
     | "/app/settings/payouts"
     | "/app/subscribers/$id"
     | "/app/projects"
+    | "/app/subscribers"
   id:
     | "__root__"
     | "/"
@@ -252,7 +252,6 @@ export interface FileRouteTypes {
     | "/app/dunning"
     | "/app/invoices"
     | "/app/plans"
-    | "/app/subscribers"
     | "/app/webhooks"
     | "/checkout/$session"
     | "/portal/$token"
@@ -263,6 +262,7 @@ export interface FileRouteTypes {
     | "/app/settings/payouts"
     | "/app/subscribers/$id"
     | "/app/projects/"
+    | "/app/subscribers/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -348,13 +348,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppWebhooksRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/subscribers": {
-      id: "/app/subscribers"
-      path: "/subscribers"
-      fullPath: "/app/subscribers"
-      preLoaderRoute: typeof AppSubscribersRouteImport
-      parentRoute: typeof AppRoute
-    }
     "/app/plans": {
       id: "/app/plans"
       path: "/plans"
@@ -390,6 +383,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppApiKeysRouteImport
       parentRoute: typeof AppRoute
     }
+    "/app/subscribers/": {
+      id: "/app/subscribers/"
+      path: "/subscribers"
+      fullPath: "/app/subscribers/"
+      preLoaderRoute: typeof AppSubscribersIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     "/app/projects/": {
       id: "/app/projects/"
       path: "/projects"
@@ -399,10 +399,10 @@ declare module "@tanstack/react-router" {
     }
     "/app/subscribers/$id": {
       id: "/app/subscribers/$id"
-      path: "/$id"
+      path: "/subscribers/$id"
       fullPath: "/app/subscribers/$id"
       preLoaderRoute: typeof AppSubscribersIdRouteImport
-      parentRoute: typeof AppSubscribersRoute
+      parentRoute: typeof AppRoute
     }
     "/app/settings/payouts": {
       id: "/app/settings/payouts"
@@ -421,30 +421,19 @@ declare module "@tanstack/react-router" {
   }
 }
 
-interface AppSubscribersRouteChildren {
-  AppSubscribersIdRoute: typeof AppSubscribersIdRoute
-}
-
-const AppSubscribersRouteChildren: AppSubscribersRouteChildren = {
-  AppSubscribersIdRoute: AppSubscribersIdRoute,
-}
-
-const AppSubscribersRouteWithChildren = AppSubscribersRoute._addFileChildren(
-  AppSubscribersRouteChildren,
-)
-
 interface AppRouteChildren {
   AppApiKeysRoute: typeof AppApiKeysRoute
   AppBillingRoute: typeof AppBillingRoute
   AppDunningRoute: typeof AppDunningRoute
   AppInvoicesRoute: typeof AppInvoicesRoute
   AppPlansRoute: typeof AppPlansRoute
-  AppSubscribersRoute: typeof AppSubscribersRouteWithChildren
   AppWebhooksRoute: typeof AppWebhooksRoute
   AppIndexRoute: typeof AppIndexRoute
   AppProjectsNewRoute: typeof AppProjectsNewRoute
   AppSettingsPayoutsRoute: typeof AppSettingsPayoutsRoute
+  AppSubscribersIdRoute: typeof AppSubscribersIdRoute
   AppProjectsIndexRoute: typeof AppProjectsIndexRoute
+  AppSubscribersIndexRoute: typeof AppSubscribersIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -453,12 +442,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppDunningRoute: AppDunningRoute,
   AppInvoicesRoute: AppInvoicesRoute,
   AppPlansRoute: AppPlansRoute,
-  AppSubscribersRoute: AppSubscribersRouteWithChildren,
   AppWebhooksRoute: AppWebhooksRoute,
   AppIndexRoute: AppIndexRoute,
   AppProjectsNewRoute: AppProjectsNewRoute,
   AppSettingsPayoutsRoute: AppSettingsPayoutsRoute,
+  AppSubscribersIdRoute: AppSubscribersIdRoute,
   AppProjectsIndexRoute: AppProjectsIndexRoute,
+  AppSubscribersIndexRoute: AppSubscribersIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

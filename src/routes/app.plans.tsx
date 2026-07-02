@@ -24,14 +24,26 @@ const CHOICES: { value: PlanBillingChoice; label: string }[] = [
 ];
 
 export const Route = createFileRoute("/app/plans")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      planId: (search.planId as string) || undefined,
+    };
+  },
   component: PlansPage,
 });
 
 function PlansPage() {
+  const { planId } = Route.useSearch();
   const navigate = useNavigate();
   const { current } = useProjects();
   const [building, setBuilding] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (planId) {
+      setSelectedPlanId(planId);
+    }
+  }, [planId]);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     title: string;
