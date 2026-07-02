@@ -12,11 +12,19 @@ export interface Account {
   email: string;
 }
 
+export interface ProjectApiKey {
+  key_prefix: string;
+  key_hash: string;
+  secret_key?: string | null;
+  createdAt: string;
+}
+
 export interface Project {
   id: string;
   name: string;
   description: string;
   createdAt: string;
+  apiKeys?: ProjectApiKey[];
 }
 
 export interface Price {
@@ -38,8 +46,8 @@ export interface Plan {
 }
 
 export interface ApiKeyResult {
-  // shape depends on backend; key shown once on generation
   key?: string;
+  secret_key?: string;
   key_prefix?: string;
 }
 
@@ -87,8 +95,8 @@ export const projectsApi = {
   create: (body: { name: string; description: string }) =>
     http.post<Project>("/dashboard/projects", body),
   remove: (id: string) => http.del<void>(`/dashboard/projects/${id}`),
-  generateKeys: (id: string) =>
-    http.post<ApiKeyResult>(`/dashboard/projects/${id}/keys`),
+  generateKeys: (id: string, env?: "live" | "test") =>
+    http.post<ApiKeyResult>(`/dashboard/projects/${id}/keys`, { environment: env }),
 };
 
 // =====================================================================

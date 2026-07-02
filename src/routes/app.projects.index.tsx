@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectsApi } from "../lib/api";
-import { PageHeader, Card, Button } from "../components/ui";
+import { PageHeader, Card, Button, AlertDialog } from "../components/ui";
 import { useProjects } from "../components/ProjectContext";
 import { deriveInitials } from "../lib/auth";
 
@@ -22,6 +23,8 @@ function ProjectsPage() {
     mutationFn: (id: string) => projectsApi.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["projects"] }),
   });
+
+  const [deleteProject, setDeleteProject] = useState<{ id: string; name: string } | null>(null);
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -75,12 +78,8 @@ function ProjectsPage() {
                     Plans →
                   </Link>
                   <button
-                    onClick={() => {
-                      if (confirm(`Delete project "${p.name}"? This cannot be undone.`)) {
-                        remove.mutate(p.id);
-                      }
-                    }}
-                    className="text-ink-4 hover:text-red"
+                    onClick={() => setDeleteProject({ id: p.id, name: p.name })}
+                    className="text-ink-4 hover:text-red cursor-pointer transition-transform hover:-translate-y-[0.5px] active:translate-y-0"
                     aria-label="Delete project"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
@@ -106,6 +105,19 @@ function ProjectsPage() {
           </Card>
         )}
       </div>
+      {deleteProject && (
+        <AlertDialog
+          open={!!deleteProject}
+          title={`Delete project "${deleteProject.name}"?`}
+          description="Are you sure you want to delete this project? This action cannot be undone, and all associated plans, subscriptions, and settings will be permanently removed."
+          onConfirm={() => {
+            remove.mutate(deleteProject.id);
+            setDeleteProject(null);
+          }}
+          onCancel={() => setDeleteProject(null)}
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

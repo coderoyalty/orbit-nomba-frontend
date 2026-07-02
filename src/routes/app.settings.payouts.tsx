@@ -147,7 +147,7 @@ function PayoutsPage() {
             >
               <TextInput
                 inputMode="numeric"
-                placeholder="0123456789"
+                placeholder="Enter 10-digit account number"
                 value={accountNumber}
                 onChange={(e) => onAccountChange(e.target.value)}
               />

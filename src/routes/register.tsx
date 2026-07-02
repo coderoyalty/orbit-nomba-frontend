@@ -1,12 +1,22 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, redirect } from "@tanstack/react-router";
 import { AuthShell } from "../components/AuthShell";
 import { Button, Field, TextInput } from "../components/ui";
 import { authApi } from "../lib/api";
+import { authStore } from "../lib/auth";
 import { ApiError } from "../lib/http";
 import { useToast } from "../components/Toast";
 
 export const Route = createFileRoute("/register")({
+  beforeLoad: async () => {
+    const snap = authStore.getSnapshot();
+    if (snap.status === "loading") {
+      await authStore.refresh();
+    }
+    if (authStore.getSnapshot().status === "authed") {
+      throw redirect({ to: "/app" });
+    }
+  },
   component: RegisterPage,
 });
 
@@ -60,7 +70,7 @@ function RegisterPage() {
       <div className="space-y-4">
         <Field label="Your name" error={errors.name}>
           <TextInput
-            placeholder="Jane Doe"
+            placeholder="Enter full name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -68,7 +78,7 @@ function RegisterPage() {
         <Field label="Work email" error={errors.email}>
           <TextInput
             type="email"
-            placeholder="you@company.com"
+            placeholder="Enter corporate email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -80,7 +90,7 @@ function RegisterPage() {
         >
           <TextInput
             type="password"
-            placeholder="••••••••"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}

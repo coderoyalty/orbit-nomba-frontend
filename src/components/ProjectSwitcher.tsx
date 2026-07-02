@@ -21,7 +21,7 @@ export function ProjectSwitcher() {
     <div className="relative mb-1.5" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-2 rounded-[10px] border border-line bg-surface px-2.5 py-2.5 text-left hover:bg-surface-2"
+        className="flex w-full items-center gap-2 rounded-[10px] border border-line bg-surface px-2.5 py-2.5 text-left hover:bg-surface-2 cursor-pointer"
       >
         <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-[7px] bg-violet-bg text-[10px] font-extrabold text-violet">
           {current ? deriveInitials(current.name) : "—"}
@@ -51,7 +51,7 @@ export function ProjectSwitcher() {
                     setCurrent(p);
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center gap-2 px-2.5 py-2 text-left text-[12px] hover:bg-surface-2 ${
+                  className={`flex w-full items-center gap-2 px-2.5 py-2 text-left text-[12px] hover:bg-surface-2 cursor-pointer ${
                     active ? "bg-cream" : ""
                   }`}
                 >
@@ -73,7 +73,7 @@ export function ProjectSwitcher() {
               setOpen(false);
               navigate({ to: "/app/projects/new" });
             }}
-            className="flex w-full items-center gap-2 border-t border-line-2 px-2.5 py-2.5 text-left text-[12px] font-semibold text-yellow-deep hover:bg-surface-2"
+            className="flex w-full items-center gap-2 border-t border-line-2 px-2.5 py-2.5 text-left text-[12px] font-semibold text-yellow-deep hover:bg-surface-2 cursor-pointer"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5">
               <path d="M12 5v14M5 12h14" />

@@ -9,7 +9,7 @@ import {
   koboToNaira,
   type Price,
 } from "../lib/api";
-import { PageHeader, Button, Badge, Card, Field, TextInput } from "../components/ui";
+import { PageHeader, Button, Badge, Card, Field, TextInput, AlertDialog } from "../components/ui";
 import { PlanBuilder } from "../features/plans/PlanBuilder";
 import { useProjects } from "../components/ProjectContext";
 import { useToast } from "../components/Toast";
@@ -32,6 +32,12 @@ function PlansPage() {
   const { current } = useProjects();
   const [building, setBuilding] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   const { data: plans, isLoading } = useQuery({
     queryKey: ["plans", current?.id],
@@ -164,9 +170,21 @@ function PlansPage() {
               projectId={current.id}
               planId={selectedPlanId}
               onClose={() => setSelectedPlanId(null)}
+              setConfirmDialog={setConfirmDialog}
             />
           </div>
         </>
+      )}
+
+      {confirmDialog && (
+        <AlertDialog
+          open={confirmDialog.open}
+          title={confirmDialog.title}
+          description={confirmDialog.description}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={() => setConfirmDialog(null)}
+          variant="danger"
+        />
       )}
     </div>
   );
@@ -176,10 +194,12 @@ function PlanDetailsDrawer({
   projectId,
   planId,
   onClose,
+  setConfirmDialog,
 }: {
   projectId: string;
   planId: string;
   onClose: () => void;
+  setConfirmDialog: (config: { open: boolean; title: string; description: string; onConfirm: () => void } | null) => void;
 }) {
   const qc = useQueryClient();
   const toast = useToast();
@@ -398,7 +418,7 @@ function PlanDetailsDrawer({
                     <span className="text-[14px] font-semibold text-ink-3">₦</span>
                     <input
                       inputMode="numeric"
-                      placeholder="15000"
+                      placeholder="Enter amount"
                       value={priceAmount}
                       onChange={(e) => setPriceAmount(e.target.value.replace(/[^\d]/g, ""))}
                       className="w-full bg-transparent px-2 py-2 text-[13px] tnum text-ink placeholder:text-ink-4 focus:outline-none"
@@ -499,12 +519,18 @@ function PlanDetailsDrawer({
                         </button>
                         <button
                           onClick={() => {
-                            if (confirm("Are you sure you want to archive this price? Active subscriptions will not be affected, but no new subscriptions can be created with this price.")) {
-                              archivePriceMutation.mutate(pr.id);
-                            }
+                            setConfirmDialog({
+                              open: true,
+                              title: "Archive Price",
+                              description: "Are you sure you want to archive this price? Active subscriptions will not be affected, but no new subscriptions can be created with this price.",
+                              onConfirm: () => {
+                                archivePriceMutation.mutate(pr.id);
+                                setConfirmDialog(null);
+                              },
+                            });
                           }}
                           disabled={archivePriceMutation.isPending}
-                          className="text-[11px] font-bold text-red hover:underline ml-auto"
+                          className="text-[11px] font-bold text-red hover:underline ml-auto cursor-pointer"
                         >
                           Archive
                         </button>
@@ -590,9 +616,15 @@ function PlanDetailsDrawer({
               size="sm"
               className="shrink-0"
               onClick={() => {
-                if (confirm("Are you sure you want to deprecate/delete this plan? This action cannot be undone.")) {
-                  deprecateMutation.mutate();
-                }
+                setConfirmDialog({
+                  open: true,
+                  title: "Deprecate Plan",
+                  description: "Are you sure you want to deprecate/delete this plan? This action cannot be undone.",
+                  onConfirm: () => {
+                    deprecateMutation.mutate();
+                    setConfirmDialog(null);
+                  },
+                });
               }}
               disabled={deprecateMutation.isPending}
             >

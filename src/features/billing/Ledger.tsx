@@ -47,7 +47,7 @@ export function Ledger({ showRefund = false }: { showRefund?: boolean }) {
               <span className="text-[14px] font-semibold text-ink-3">₦</span>
               <input
                 inputMode="numeric"
-                placeholder="5000"
+                placeholder="Enter amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
                 className="w-full bg-transparent px-2 py-2.5 text-[13px] tnum focus:outline-none"

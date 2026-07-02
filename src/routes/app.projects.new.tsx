@@ -47,14 +47,14 @@ function NewProjectPage() {
         <div className="space-y-5">
           <Field label="Project name" error={errors.name}>
             <TextInput
-              placeholder="MovieNaija"
+              placeholder="Enter project name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </Field>
           <Field label="Description" error={errors.description}>
             <TextInput
-              placeholder="Subscription-based streaming for Nollywood."
+              placeholder="Enter project description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

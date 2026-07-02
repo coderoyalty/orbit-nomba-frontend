@@ -102,12 +102,12 @@ export function PlanBuilder({
     <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
       <div className="space-y-5">
         <Field label="Plan name" error={errors.name}>
-          <TextInput placeholder="Pro" value={name} onChange={(e) => setName(e.target.value)} />
+          <TextInput placeholder="Enter plan name (e.g., Premium Tier)" value={name} onChange={(e) => setName(e.target.value)} />
         </Field>
 
         <Field label="Description" hint="Shown on the checkout screen.">
           <TextInput
-            placeholder="Full access, billed monthly."
+            placeholder="Enter plan description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -119,7 +119,7 @@ export function PlanBuilder({
               <span className="text-[14px] font-semibold text-ink-3">₦</span>
               <input
                 inputMode="numeric"
-                placeholder="15000"
+                placeholder="Enter amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
                 className="w-full bg-transparent px-2 py-2.5 text-[13px] tnum text-ink placeholder:text-ink-4 focus:outline-none"
@@ -130,7 +130,7 @@ export function PlanBuilder({
           <Field label="Trial period (days)" error={errors.trialDays} hint="Optional. Leave empty for no trial.">
             <TextInput
               inputMode="numeric"
-              placeholder="e.g. 14"
+              placeholder="Enter number of trial days"
               value={trialDays}
               onChange={(e) => setTrialDays(e.target.value.replace(/[^\d]/g, ""))}
             />

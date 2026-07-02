@@ -34,7 +34,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const setProjects = useCallback((list: Project[]) => {
     setProjectsState(list);
     setCurrentState((cur) => {
-      if (cur && list.some((p) => p.id === cur.id)) return cur;
+      const found = cur ? list.find((p) => p.id === cur.id) : null;
+      if (found) return found;
       let lastId: string | null = null;
       try {
         lastId = localStorage.getItem(LAST_KEY);

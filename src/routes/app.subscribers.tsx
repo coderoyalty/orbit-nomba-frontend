@@ -175,11 +175,11 @@ function SubscribersPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3.5 text-right text-[13px] text-ink-2 tnum">
-                      {new Date(c.createdAt).toLocaleDateString("en-GB", {
+                      {c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
-                      })}
+                      }) : "—"}
                     </td>
                   </tr>
                 ))}
