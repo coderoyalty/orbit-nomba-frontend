@@ -56,7 +56,8 @@ export function useAuth() {
   return useSyncExternalStore(authStore.subscribe, authStore.getSnapshot);
 }
 
-export function deriveInitials(name: string) {
+export function deriveInitials(name?: string) {
+  if (!name) return "";
   return name
     .split(/\s+/)
     .map((w) => w[0])

@@ -32,6 +32,7 @@ export interface Plan {
   name: string;
   description: string;
   is_active: boolean;
+  trial_days: number;
   prices: Price[];
   createdAt: string;
 }
@@ -96,6 +97,7 @@ export const projectsApi = {
 export interface CreatePlanInput {
   name: string;
   description: string;
+  trial_days?: number;
   price: {
     interval: Interval;
     interval_count: number;
@@ -103,13 +105,40 @@ export interface CreatePlanInput {
   };
 }
 
+export interface UpdatePlanInput {
+  name: string;
+  description: string;
+}
+
+export interface AddPriceInput {
+  interval: Interval;
+  interval_count: number;
+  unit_amount: number; // kobo
+}
+
+export interface ChangePriceInput {
+  unit_amount: number; // kobo
+}
+
 export const plansApi = {
   list: (projectId: string) =>
     http.get<Plan[]>(`/dashboard/projects/${projectId}/plans`),
+  get: (projectId: string, planId: string) =>
+    http.get<Plan>(`/dashboard/projects/${projectId}/plans/${planId}`),
   create: (projectId: string, input: CreatePlanInput) =>
     http.post<Plan>(`/dashboard/projects/${projectId}/plans`, input),
+  update: (projectId: string, planId: string, input: UpdatePlanInput) =>
+    http.patch<Plan>(`/dashboard/projects/${projectId}/plans/${planId}`, input),
   remove: (projectId: string, planId: string) =>
     http.del<void>(`/dashboard/projects/${projectId}/plans/${planId}`),
+  addPrice: (projectId: string, planId: string, input: AddPriceInput) =>
+    http.post<Plan>(`/dashboard/projects/${projectId}/plans/${planId}/prices`, input),
+  archivePrice: (projectId: string, planId: string, priceId: string) =>
+    http.del<Plan>(`/dashboard/projects/${projectId}/plans/${planId}/prices/${priceId}/archive`),
+  changePrice: (projectId: string, planId: string, priceId: string, input: ChangePriceInput) =>
+    http.post<Plan>(`/dashboard/projects/${projectId}/plans/${planId}/prices/${priceId}/change-price`, input),
+  cancelSubscriptions: (projectId: string, planId: string) =>
+    http.post<void>(`/dashboard/projects/${projectId}/plans/${planId}/cancel-subscriptions`),
 };
 
 // =====================================================================

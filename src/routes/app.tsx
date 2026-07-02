@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   createFileRoute,
   Outlet,
@@ -33,6 +33,7 @@ function AppLayout() {
   const { account } = useAuth();
   const navigate = useNavigate();
   const { setProjects } = useProjects();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load the tenant's projects once inside the dashboard.
   const { data: projects } = useQuery({
@@ -48,12 +49,25 @@ function AppLayout() {
 
   return (
     <div className="flex h-full">
-      <Sidebar />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-line-2 bg-surface px-6 py-3.5">
-          <span className="text-[13px] font-semibold text-ink-3">
-            {account.name}
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-1 text-ink-2 hover:text-ink lg:hidden cursor-pointer"
+              aria-label="Open sidebar"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-5 w-5">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <span className="text-[13px] font-semibold text-ink-3">
+              {account.name || account.email || "User"}
+            </span>
+          </div>
           <div className="flex items-center gap-3">
             <button
               onClick={async () => {
@@ -65,7 +79,7 @@ function AppLayout() {
               Sign out
             </button>
             <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-cream text-[12px] font-bold text-yellow-ink">
-              {deriveInitials(account.name)}
+              {deriveInitials(account.name || account.email || "User")}
             </span>
           </div>
         </header>
