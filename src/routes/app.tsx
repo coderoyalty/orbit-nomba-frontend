@@ -5,7 +5,7 @@ import {
   useNavigate,
   redirect,
 } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { authStore, useAuth, deriveInitials } from "../lib/auth";
 import { projectsApi } from "../lib/api";
 import { Sidebar } from "../components/Sidebar";
@@ -34,6 +34,18 @@ function AppLayout() {
   const navigate = useNavigate();
   const { setProjects } = useProjects();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const [isTestMode, setIsTestMode] = useState(() => {
+    return localStorage.getItem("orbit_active_env") !== "live";
+  });
+
+  const toggleEnvironment = () => {
+    const nextVal = !isTestMode;
+    setIsTestMode(nextVal);
+    localStorage.setItem("orbit_active_env", nextVal ? "test" : "live");
+    queryClient.invalidateQueries();
+  };
 
   // Load the tenant's projects once inside the dashboard.
   const { data: projects } = useQuery({
@@ -68,7 +80,28 @@ function AppLayout() {
               {account.name || account.email || "User"}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-5">
+            {/* Test Mode Switcher */}
+            <div className="flex items-center gap-2">
+              <span className={`text-[12px] font-semibold select-none ${isTestMode ? "text-amber" : "text-ink-3"}`}>
+                {isTestMode ? "Test Mode" : "Live Mode"}
+              </span>
+              <button
+                onClick={toggleEnvironment}
+                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
+                  isTestMode ? "bg-amber" : "bg-surface-3 border border-line"
+                }`}
+                role="switch"
+                aria-checked={isTestMode}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    isTestMode ? "translate-x-4.5 mt-[1px]" : "translate-x-0.5 mt-[1px]"
+                  }`}
+                />
+              </button>
+            </div>
+
             <button
               onClick={async () => {
                 await authStore.signOut();

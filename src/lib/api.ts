@@ -155,30 +155,48 @@ export type SubscriptionState =
   | "canceled"
   | "unpaid";
 
-export interface Subscriber {
+export interface BackendCustomer {
   id: string;
   name: string;
   email: string;
-  planName: string;
-  amount: number; // kobo
-  state: SubscriptionState;
-  renews: string;
-  card: { brand: string; last4: string; expiry: string };
-  dunning?: { attempt: number; of: number; nextRetry: string; accessEnds: string };
+  is_active: boolean;
+  createdAt: string;
+  metadata?: string;
+  environment: "live" | "test";
 }
 
-const mockSubscribers: Subscriber[] = [
-  { id: "cus_8Kf2", name: "Ada Obi", email: "ada@craftly.io", planName: "Pro", amount: 1500000, state: "active", renews: "14 Jul 2026", card: { brand: "VISA", last4: "4821", expiry: "09/27" } },
-  { id: "cus_3Lp9", name: "Tunde Bello", email: "tunde@shiplane.ng", planName: "Pro", amount: 1500000, state: "past_due", renews: "—", card: { brand: "VISA", last4: "1190", expiry: "02/26" }, dunning: { attempt: 2, of: 4, nextRetry: "19 Jul", accessEnds: "23 Jul" } },
-  { id: "cus_7Qm4", name: "Zainab Musa", email: "zainab@payup.africa", planName: "Enterprise", amount: 5000000, state: "active", renews: "01 Jan 2027", card: { brand: "MAST", last4: "0042", expiry: "11/28" } },
-  { id: "cus_1Aa0", name: "Chidi Eze", email: "chidi@noteflow.app", planName: "Pro", amount: 1500000, state: "canceled", renews: "—", card: { brand: "VISA", last4: "7781", expiry: "05/27" } },
-  { id: "cus_9Zz1", name: "Funke Ade", email: "funke@tasknest.io", planName: "Pro", amount: 1500000, state: "incomplete", renews: "—", card: { brand: "VISA", last4: "3310", expiry: "08/29" } },
-];
+export interface BackendPaymentMethod {
+  id: string;
+  last4: string;
+  brand: string;
+  createdAt: string;
+}
+
+export interface BackendSubscription {
+  id: string;
+  status: SubscriptionState;
+  customer_id: string;
+  price_id: string;
+  payment_method_id: string | null;
+  trial_start: string | null;
+  trial_end: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  canceled_at: string | null;
+  createdAt: string;
+  environment: "live" | "test";
+  
+  customer?: BackendCustomer;
+  paymentMethod?: BackendPaymentMethod | null;
+  price?: Price & { plan?: Plan };
+}
 
 export const subscribersApi = {
-  // TODO: GET /dashboard/projects/:projectId/subscribers
-  async list(_projectId?: string): Promise<Subscriber[]> { await delay(); return [...mockSubscribers]; },
-  async get(id: string): Promise<Subscriber | undefined> { await delay(); return mockSubscribers.find((s) => s.id === id); },
+  listCustomers: (projectId: string) =>
+    http.get<BackendCustomer[]>(`/dashboard/projects/${projectId}/customers`),
+  listSubscriptions: (projectId: string) =>
+    http.get<BackendSubscription[]>(`/dashboard/projects/${projectId}/subscriptions`),
 };
 
 export type LedgerType = "charge" | "proration" | "refund" | "failed";

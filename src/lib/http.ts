@@ -33,12 +33,14 @@ async function request<T>(
   options: RequestInit = {},
 ): Promise<T> {
   let res: Response;
+  const activeEnv = localStorage.getItem("orbit_active_env") ?? "test";
   try {
     res = await fetch(`${BASE_URL}${path}`, {
       ...options,
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        "X-Orbit-Env": activeEnv,
         ...options.headers,
       },
     });
