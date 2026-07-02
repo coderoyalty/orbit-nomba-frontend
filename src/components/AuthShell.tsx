@@ -47,18 +47,6 @@ export function AuthShell({
             unlock premium features for your users.
           </p>
         </div>
-
-        <div className="relative flex gap-2.5 text-[11px] font-semibold text-ink-4">
-          <span className="rounded-full border border-white/15 px-3 py-1.5">
-            State machine
-          </span>
-          <span className="rounded-full border border-white/15 px-3 py-1.5">
-            Financial ledger
-          </span>
-          <span className="rounded-full border border-white/15 px-3 py-1.5">
-            Multi-tenant
-          </span>
-        </div>
       </div>
 
       {/* Form panel */}

@@ -4,6 +4,7 @@ import { AuthShell } from "../components/AuthShell";
 import { Button, Field, TextInput } from "../components/ui";
 import { authApi } from "../lib/api";
 import { ApiError } from "../lib/http";
+import { useToast } from "../components/Toast";
 
 export const Route = createFileRoute("/register")({
   component: RegisterPage,
@@ -11,15 +12,14 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [serverError, setServerError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function submit() {
-    setServerError(null);
     const next: Record<string, string> = {};
     if (!name.trim()) next.name = "Your name is required.";
     if (!email.trim()) next.email = "Work email is required.";
@@ -32,10 +32,9 @@ function RegisterPage() {
     setPending(true);
     try {
       await authApi.register({ name: name.trim(), email: email.trim(), password });
-      // account created — send them to sign in
       navigate({ to: "/login", search: { registered: true } });
     } catch (err) {
-      setServerError(
+      toast(
         err instanceof ApiError
           ? err.message
           : "Could not create your account. Try again.",
@@ -87,11 +86,6 @@ function RegisterPage() {
             onKeyDown={(e) => e.key === "Enter" && submit()}
           />
         </Field>
-        {serverError && (
-          <p className="rounded-[10px] bg-red-bg px-3.5 py-2.5 text-[12px] font-medium text-red">
-            {serverError}
-          </p>
-        )}
         <Button variant="dark" block disabled={pending} onClick={submit}>
           {pending ? "Creating account…" : "Create account"}
         </Button>

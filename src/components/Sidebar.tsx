@@ -29,6 +29,8 @@ function NavItem({
   );
 }
 
+// Kept for when the backend endpoints ship.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Group({ children }: { children: ReactNode }) {
   return (
     <div className="px-2.5 pb-1.5 pt-4 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-4">
@@ -38,7 +40,7 @@ function Group({ children }: { children: ReactNode }) {
 }
 
 import type { ReactNode } from "react";
-import { Badge } from "./ui";
+// import { Badge } from "./ui";
 import { ProjectSwitcher } from "./ProjectSwitcher";
 
 export function Sidebar() {
@@ -79,6 +81,8 @@ export function Sidebar() {
           </svg>
         }
       />
+
+      {/* Hidden until backend endpoints ship
       <NavItem
         to="/app/subscribers"
         label="Subscribers"
@@ -118,6 +122,7 @@ export function Sidebar() {
           </svg>
         }
       />
+      */}
 
       <Group>Developers</Group>
       <NavItem
@@ -129,6 +134,8 @@ export function Sidebar() {
           </svg>
         }
       />
+
+      {/* Hidden until backend endpoints ship
       <NavItem
         to="/app/webhooks"
         label="Webhooks"
@@ -149,6 +156,7 @@ export function Sidebar() {
           </svg>
         }
       />
+      */}
     </aside>
   );
 }
