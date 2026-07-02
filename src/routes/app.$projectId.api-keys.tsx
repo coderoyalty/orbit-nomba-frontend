@@ -6,7 +6,7 @@ import { ApiError } from "../lib/http";
 import { PageHeader, Card, CopyField, Badge, Button } from "../components/ui";
 import { useProjects } from "../components/ProjectContext";
 
-export const Route = createFileRoute("/app/api-keys")({
+export const Route = createFileRoute("/app/$projectId/api-keys")({
   component: ApiKeysPage,
 });
 

@@ -5,7 +5,7 @@ import { subscribersApi, formatNaira, STATE_META } from "../lib/api";
 import { PageHeader, Card, Badge, Button } from "../components/ui";
 import { useProjects } from "../components/ProjectContext";
 
-export const Route = createFileRoute("/app/subscribers/")({
+export const Route = createFileRoute("/app/$projectId/subscribers/")({
   component: SubscribersPage,
 });
 
@@ -114,7 +114,7 @@ function SubscribersPage() {
                   return (
                     <tr
                       key={s.id}
-                      onClick={() => navigate({ to: "/app/subscribers/$id", params: { id: s.id } })}
+                      onClick={() => navigate({ to: "/app/$projectId/subscribers/$id", params: { projectId: current!.id, id: s.id } })}
                       className="border-t border-line-2 first:border-t-0 hover:bg-surface-2 cursor-pointer transition-colors"
                     >
                       <td className="px-4 py-3.5">

@@ -3,7 +3,7 @@ import { PageHeader } from "../components/ui";
 import { StateMachine } from "../features/billing/StateMachine";
 import { Ledger } from "../features/billing/Ledger";
 
-export const Route = createFileRoute("/app/billing")({
+export const Route = createFileRoute("/app/$projectId/billing")({
   component: BillingPage,
 });
 

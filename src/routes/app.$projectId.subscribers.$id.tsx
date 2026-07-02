@@ -5,7 +5,7 @@ import { PageHeader, Card, Badge, Button } from "../components/ui";
 import { Ledger } from "../features/billing/Ledger";
 import { useProjects } from "../components/ProjectContext";
 
-export const Route = createFileRoute("/app/subscribers/$id")({
+export const Route = createFileRoute("/app/$projectId/subscribers/$id")({
   component: SubscriberDetail,
 });
 
@@ -30,7 +30,7 @@ function formatDate(dateStr?: string | null) {
 }
 
 function SubscriberDetail() {
-  const { id } = Route.useParams();
+  const { projectId, id } = Route.useParams();
   const { current } = useProjects();
 
   const { data: subscriptions, isLoading } = useQuery({
@@ -43,7 +43,7 @@ function SubscriberDetail() {
     return (
       <div className="mx-auto max-w-5xl">
         <p className="text-[14px] text-ink-3">No active project selected.</p>
-        <Link to="/app/subscribers" className="text-[13px] font-semibold text-yellow-deep">
+        <Link to="/app/$projectId/subscribers" params={{ projectId }} className="text-[13px] font-semibold text-yellow-deep">
           ← Back to subscribers
         </Link>
       </div>
@@ -74,7 +74,7 @@ function SubscriberDetail() {
             </p>
           </div>
           <div className="pt-2 w-full">
-            <Link to="/app/subscribers">
+            <Link to="/app/$projectId/subscribers" params={{ projectId }}>
               <Button variant="dark" block>
                 Return to subscribers
               </Button>
@@ -136,7 +136,8 @@ function SubscriberDetail() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <Link
-          to="/app/subscribers"
+          to="/app/$projectId/subscribers"
+          params={{ projectId }}
           className="inline-flex items-center gap-1 text-[12px] font-semibold text-ink-3 hover:text-ink transition-colors"
         >
           ← Back to subscribers
@@ -165,7 +166,8 @@ function SubscriberDetail() {
               <Row label="Plan">
                 {sub.price?.plan_id ? (
                   <Link
-                    to="/app/plans"
+                    to="/app/$projectId/plans"
+                    params={{ projectId }}
                     search={{ planId: sub.price.plan_id }}
                     className="text-yellow-deep hover:underline font-semibold"
                   >

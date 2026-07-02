@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { devApi, type WebhookStatus } from "../lib/api";
 import { PageHeader, Card, Badge } from "../components/ui";
 
-export const Route = createFileRoute("/app/webhooks")({
+export const Route = createFileRoute("/app/$projectId/webhooks")({
   component: WebhooksPage,
 });
 

@@ -23,7 +23,7 @@ const CHOICES: { value: PlanBillingChoice; label: string }[] = [
   { value: "custom", label: "Custom" },
 ];
 
-export const Route = createFileRoute("/app/plans")({
+export const Route = createFileRoute("/app/$projectId/plans")({
   validateSearch: (search: Record<string, unknown>) => {
     return {
       planId: (search.planId as string) || undefined,

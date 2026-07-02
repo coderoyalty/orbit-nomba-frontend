@@ -123,12 +123,13 @@ export function TextInput({
 export function Card({
   children,
   className = "",
+  ...props
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
-}) {
+} & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`rounded-[14px] border border-line bg-surface ${className}`}>
+    <div className={`rounded-[14px] border border-line bg-surface ${className}`} {...props}>
       {children}
     </div>
   );

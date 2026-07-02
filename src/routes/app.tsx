@@ -4,6 +4,7 @@ import {
   Outlet,
   useNavigate,
   redirect,
+  useMatches,
 } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { authStore, useAuth, deriveInitials } from "../lib/auth";
@@ -32,9 +33,10 @@ export const Route = createFileRoute("/app")({
 function AppLayout() {
   const { account } = useAuth();
   const navigate = useNavigate();
-  const { setProjects } = useProjects();
+  const { current, setCurrent, setProjects } = useProjects();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const queryClient = useQueryClient();
+  const matches = useMatches();
 
   const [isTestMode, setIsTestMode] = useState(() => {
     return localStorage.getItem("orbit_active_env") !== "live";
@@ -56,6 +58,27 @@ function AppLayout() {
   useEffect(() => {
     if (projects) setProjects(projects);
   }, [projects, setProjects]);
+
+  // Extract projectId from active route parameters
+  const projectMatch = matches.find((m) => m.params && "projectId" in m.params);
+  const projectId = projectMatch?.params?.projectId;
+
+  // Synchronize context selected project with active URL param
+  useEffect(() => {
+    if (projects) {
+      if (projectId) {
+        const found = projects.find((p) => p.id === projectId);
+        if (found) {
+          setCurrent(found);
+        } else {
+          // Redirect to main grid if active ID segment is invalid
+          navigate({ to: "/app" });
+        }
+      } else {
+        setCurrent(null);
+      }
+    }
+  }, [projectId, projects, setCurrent, navigate]);
 
   if (!account) return null;
 
@@ -82,25 +105,27 @@ function AppLayout() {
           </div>
           <div className="flex items-center gap-5">
             {/* Test Mode Switcher */}
-            <div className="flex items-center gap-2">
-              <span className={`text-[12px] font-semibold select-none ${isTestMode ? "text-amber" : "text-ink-3"}`}>
-                {isTestMode ? "Test Mode" : "Live Mode"}
-              </span>
-              <button
-                onClick={toggleEnvironment}
-                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
-                  isTestMode ? "bg-amber" : "bg-surface-3 border border-line"
-                }`}
-                role="switch"
-                aria-checked={isTestMode}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    isTestMode ? "translate-x-4.5 mt-[1px]" : "translate-x-0.5 mt-[1px]"
+            {current && (
+              <div className="flex items-center gap-2">
+                <span className={`text-[12px] font-semibold select-none ${isTestMode ? "text-amber" : "text-ink-3"}`}>
+                  {isTestMode ? "Test Mode" : "Live Mode"}
+                </span>
+                <button
+                  onClick={toggleEnvironment}
+                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
+                    isTestMode ? "bg-amber" : "bg-surface-3 border border-line"
                   }`}
-                />
-              </button>
-            </div>
+                  role="switch"
+                  aria-checked={isTestMode}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      isTestMode ? "translate-x-4.5 mt-[1px]" : "translate-x-0.5 mt-[1px]"
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
 
             <button
               onClick={async () => {

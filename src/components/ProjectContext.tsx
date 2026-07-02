@@ -10,7 +10,7 @@ import type { Project } from "../lib/api";
 interface ProjectCtx {
   projects: Project[];
   current: Project | null;
-  setCurrent: (p: Project) => void;
+  setCurrent: (p: Project | null) => void;
   setProjects: (p: Project[]) => void;
 }
 
@@ -22,12 +22,16 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [projects, setProjectsState] = useState<Project[]>([]);
   const [current, setCurrentState] = useState<Project | null>(null);
 
-  const setCurrent = useCallback((p: Project) => {
+  const setCurrent = useCallback((p: Project | null) => {
     setCurrentState(p);
     try {
-      localStorage.setItem(LAST_KEY, p.id);
+      if (p) {
+        localStorage.setItem(LAST_KEY, p.id);
+      } else {
+        localStorage.removeItem(LAST_KEY);
+      }
     } catch {
-      // storage may be unavailable; selection still works in-session
+      // storage may be unavailable
     }
   }, []);
 
@@ -42,7 +46,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       } catch {
         lastId = null;
       }
-      return list.find((p) => p.id === lastId) ?? list[0] ?? null;
+      return list.find((p) => p.id === lastId) ?? null;
     });
   }, []);
 

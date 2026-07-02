@@ -5,7 +5,7 @@ import { PageHeader, Card, Badge, Button } from "../components/ui";
 import { StateMachine } from "../features/billing/StateMachine";
 import { useProjects } from "../components/ProjectContext";
 
-export const Route = createFileRoute("/app/dunning")({
+export const Route = createFileRoute("/app/$projectId/dunning")({
   component: DunningPage,
 });
 
@@ -84,7 +84,7 @@ function DunningPage() {
                 return (
                   <tr key={s.id} className="border-t border-line-2 hover:bg-surface-2">
                     <td className="px-4 py-3.5">
-                      <Link to="/app/subscribers/$id" params={{ id: s.id }}>
+                      <Link to="/app/$projectId/subscribers/$id" params={{ projectId: current!.id, id: s.id }}>
                         <div className="text-[13px] font-semibold hover:text-yellow-deep">
                           {s.customer.name}
                         </div>
