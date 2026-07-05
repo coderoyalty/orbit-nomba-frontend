@@ -33,19 +33,16 @@ export const Route = createFileRoute("/app")({
 function AppLayout() {
   const { account } = useAuth();
   const navigate = useNavigate();
-  const { current, setCurrent, setProjects } = useProjects();
+  const { current, setCurrent, setProjects, activeEnv, setActiveEnv } = useProjects();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const queryClient = useQueryClient();
   const matches = useMatches();
 
-  const [isTestMode, setIsTestMode] = useState(() => {
-    return localStorage.getItem("orbit_active_env") !== "live";
-  });
+  const isTestMode = activeEnv === "test";
 
   const toggleEnvironment = () => {
-    const nextVal = !isTestMode;
-    setIsTestMode(nextVal);
-    localStorage.setItem("orbit_active_env", nextVal ? "test" : "live");
+    const nextVal = activeEnv === "test" ? "live" : "test";
+    setActiveEnv(nextVal);
     queryClient.invalidateQueries();
   };
 

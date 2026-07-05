@@ -249,6 +249,29 @@ export const devApi = {
   },
 };
 
+export interface WebhookEndpoint {
+  id: string;
+  url: string;
+  signing_secret: string;
+  project_id: string;
+  environment: "live" | "test";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddWebhookInput {
+  url: string;
+  signing_secret: string;
+  environment: "live" | "test";
+}
+
+export const webhooksApi = {
+  list: (projectId: string) =>
+    http.get<WebhookEndpoint[]>(`/dashboard/projects/${projectId}/webhooks`),
+  upsert: (projectId: string, body: AddWebhookInput) =>
+    http.post<WebhookEndpoint>(`/dashboard/projects/${projectId}/webhooks`, body),
+};
+
 export interface BankDetails { bankName: string; accountNumber: string; accountName: string; subAccount?: string; }
 let mockBank: BankDetails | null = null;
 

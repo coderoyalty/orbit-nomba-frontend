@@ -12,15 +12,25 @@ interface ProjectCtx {
   current: Project | null;
   setCurrent: (p: Project | null) => void;
   setProjects: (p: Project[]) => void;
+  activeEnv: "live" | "test";
+  setActiveEnv: (env: "live" | "test") => void;
 }
 
 const Ctx = createContext<ProjectCtx | null>(null);
 
 const LAST_KEY = "orbit_last_project";
+const ENV_KEY = "orbit_active_env";
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
   const [projects, setProjectsState] = useState<Project[]>([]);
   const [current, setCurrentState] = useState<Project | null>(null);
+  const [activeEnv, setActiveEnvState] = useState<"live" | "test">(() => {
+    try {
+      return (localStorage.getItem(ENV_KEY) ?? "test") as "live" | "test";
+    } catch {
+      return "test";
+    }
+  });
 
   const setCurrent = useCallback((p: Project | null) => {
     setCurrentState(p);
@@ -50,8 +60,17 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setActiveEnv = useCallback((env: "live" | "test") => {
+    setActiveEnvState(env);
+    try {
+      localStorage.setItem(ENV_KEY, env);
+    } catch {
+      // storage may be unavailable
+    }
+  }, []);
+
   return (
-    <Ctx.Provider value={{ projects, current, setCurrent, setProjects }}>
+    <Ctx.Provider value={{ projects, current, setCurrent, setProjects, activeEnv, setActiveEnv }}>
       {children}
     </Ctx.Provider>
   );
