@@ -79,7 +79,7 @@ function CheckoutPage() {
               Card information
             </div>
             <input
-              placeholder="1234 1234 1234 1234"
+              placeholder="Card number"
               className="w-full rounded-[10px] border border-line bg-surface px-3.5 py-2.5 text-[13px] placeholder:text-ink-4 focus:border-yellow focus:outline-none"
             />
             <div className="mt-2 flex gap-2.5">
@@ -88,7 +88,7 @@ function CheckoutPage() {
                 className="w-1/2 rounded-[10px] border border-line bg-surface px-3.5 py-2.5 text-[13px] placeholder:text-ink-4 focus:border-yellow focus:outline-none"
               />
               <input
-                placeholder="CVC"
+                placeholder="CVV / CVC"
                 className="w-1/2 rounded-[10px] border border-line bg-surface px-3.5 py-2.5 text-[13px] placeholder:text-ink-4 focus:border-yellow focus:outline-none"
               />
             </div>

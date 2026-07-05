@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { payoutsApi } from "../lib/api";
 import { PageHeader, Card, Field, TextInput, Button, Badge } from "../components/ui";
 
-export const Route = createFileRoute("/app/settings/payouts")({
+export const Route = createFileRoute("/app/$projectId/settings/payouts")({
   component: PayoutsPage,
 });
 
@@ -147,7 +147,7 @@ function PayoutsPage() {
             >
               <TextInput
                 inputMode="numeric"
-                placeholder="0123456789"
+                placeholder="Enter 10-digit account number"
                 value={accountNumber}
                 onChange={(e) => onAccountChange(e.target.value)}
               />

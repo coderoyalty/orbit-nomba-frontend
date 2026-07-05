@@ -12,11 +12,19 @@ export interface Account {
   email: string;
 }
 
+export interface ProjectApiKey {
+  key_prefix: string;
+  key_hash: string;
+  secret_key?: string | null;
+  createdAt: string;
+}
+
 export interface Project {
   id: string;
   name: string;
   description: string;
   createdAt: string;
+  apiKeys?: ProjectApiKey[];
 }
 
 export interface Price {
@@ -32,13 +40,14 @@ export interface Plan {
   name: string;
   description: string;
   is_active: boolean;
+  trial_days: number;
   prices: Price[];
   createdAt: string;
 }
 
 export interface ApiKeyResult {
-  // shape depends on backend; key shown once on generation
   key?: string;
+  secret_key?: string;
   key_prefix?: string;
 }
 
@@ -86,8 +95,8 @@ export const projectsApi = {
   create: (body: { name: string; description: string }) =>
     http.post<Project>("/dashboard/projects", body),
   remove: (id: string) => http.del<void>(`/dashboard/projects/${id}`),
-  generateKeys: (id: string) =>
-    http.post<ApiKeyResult>(`/dashboard/projects/${id}/keys`),
+  generateKeys: (id: string, env?: "live" | "test") =>
+    http.post<ApiKeyResult>(`/dashboard/projects/${id}/keys`, { environment: env }),
 };
 
 // =====================================================================
@@ -96,6 +105,7 @@ export const projectsApi = {
 export interface CreatePlanInput {
   name: string;
   description: string;
+  trial_days?: number;
   price: {
     interval: Interval;
     interval_count: number;
@@ -103,13 +113,40 @@ export interface CreatePlanInput {
   };
 }
 
+export interface UpdatePlanInput {
+  name: string;
+  description: string;
+}
+
+export interface AddPriceInput {
+  interval: Interval;
+  interval_count: number;
+  unit_amount: number; // kobo
+}
+
+export interface ChangePriceInput {
+  unit_amount: number; // kobo
+}
+
 export const plansApi = {
   list: (projectId: string) =>
     http.get<Plan[]>(`/dashboard/projects/${projectId}/plans`),
+  get: (projectId: string, planId: string) =>
+    http.get<Plan>(`/dashboard/projects/${projectId}/plans/${planId}`),
   create: (projectId: string, input: CreatePlanInput) =>
     http.post<Plan>(`/dashboard/projects/${projectId}/plans`, input),
+  update: (projectId: string, planId: string, input: UpdatePlanInput) =>
+    http.patch<Plan>(`/dashboard/projects/${projectId}/plans/${planId}`, input),
   remove: (projectId: string, planId: string) =>
     http.del<void>(`/dashboard/projects/${projectId}/plans/${planId}`),
+  addPrice: (projectId: string, planId: string, input: AddPriceInput) =>
+    http.post<Plan>(`/dashboard/projects/${projectId}/plans/${planId}/prices`, input),
+  archivePrice: (projectId: string, planId: string, priceId: string) =>
+    http.del<Plan>(`/dashboard/projects/${projectId}/plans/${planId}/prices/${priceId}/archive`),
+  changePrice: (projectId: string, planId: string, priceId: string, input: ChangePriceInput) =>
+    http.post<Plan>(`/dashboard/projects/${projectId}/plans/${planId}/prices/${priceId}/change-price`, input),
+  cancelSubscriptions: (projectId: string, planId: string) =>
+    http.post<void>(`/dashboard/projects/${projectId}/plans/${planId}/cancel-subscriptions`),
 };
 
 // =====================================================================
@@ -126,30 +163,48 @@ export type SubscriptionState =
   | "canceled"
   | "unpaid";
 
-export interface Subscriber {
+export interface BackendCustomer {
   id: string;
   name: string;
   email: string;
-  planName: string;
-  amount: number; // kobo
-  state: SubscriptionState;
-  renews: string;
-  card: { brand: string; last4: string; expiry: string };
-  dunning?: { attempt: number; of: number; nextRetry: string; accessEnds: string };
+  is_active: boolean;
+  createdAt: string;
+  metadata?: string;
+  environment: "live" | "test";
 }
 
-const mockSubscribers: Subscriber[] = [
-  { id: "cus_8Kf2", name: "Ada Obi", email: "ada@craftly.io", planName: "Pro", amount: 1500000, state: "active", renews: "14 Jul 2026", card: { brand: "VISA", last4: "4821", expiry: "09/27" } },
-  { id: "cus_3Lp9", name: "Tunde Bello", email: "tunde@shiplane.ng", planName: "Pro", amount: 1500000, state: "past_due", renews: "—", card: { brand: "VISA", last4: "1190", expiry: "02/26" }, dunning: { attempt: 2, of: 4, nextRetry: "19 Jul", accessEnds: "23 Jul" } },
-  { id: "cus_7Qm4", name: "Zainab Musa", email: "zainab@payup.africa", planName: "Enterprise", amount: 5000000, state: "active", renews: "01 Jan 2027", card: { brand: "MAST", last4: "0042", expiry: "11/28" } },
-  { id: "cus_1Aa0", name: "Chidi Eze", email: "chidi@noteflow.app", planName: "Pro", amount: 1500000, state: "canceled", renews: "—", card: { brand: "VISA", last4: "7781", expiry: "05/27" } },
-  { id: "cus_9Zz1", name: "Funke Ade", email: "funke@tasknest.io", planName: "Pro", amount: 1500000, state: "incomplete", renews: "—", card: { brand: "VISA", last4: "3310", expiry: "08/29" } },
-];
+export interface BackendPaymentMethod {
+  id: string;
+  last4: string;
+  brand: string;
+  createdAt: string;
+}
+
+export interface BackendSubscription {
+  id: string;
+  status: SubscriptionState;
+  customer_id: string;
+  price_id: string;
+  payment_method_id: string | null;
+  trial_start: string | null;
+  trial_end: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  canceled_at: string | null;
+  createdAt: string;
+  environment: "live" | "test";
+  
+  customer?: BackendCustomer;
+  paymentMethod?: BackendPaymentMethod | null;
+  price?: Price & { plan?: Plan };
+}
 
 export const subscribersApi = {
-  // TODO: GET /dashboard/projects/:projectId/subscribers
-  async list(_projectId?: string): Promise<Subscriber[]> { await delay(); return [...mockSubscribers]; },
-  async get(id: string): Promise<Subscriber | undefined> { await delay(); return mockSubscribers.find((s) => s.id === id); },
+  listCustomers: (projectId: string) =>
+    http.get<BackendCustomer[]>(`/dashboard/projects/${projectId}/customers`),
+  listSubscriptions: (projectId: string) =>
+    http.get<BackendSubscription[]>(`/dashboard/projects/${projectId}/subscriptions`),
 };
 
 export type LedgerType = "charge" | "proration" | "refund" | "failed";
@@ -192,6 +247,29 @@ export const devApi = {
       { id: "evt_4", event: "subscription.canceled", status: "200", when: "1h ago" },
     ];
   },
+};
+
+export interface WebhookEndpoint {
+  id: string;
+  url: string;
+  signing_secret: string;
+  project_id: string;
+  environment: "live" | "test";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddWebhookInput {
+  url: string;
+  signing_secret: string;
+  environment: "live" | "test";
+}
+
+export const webhooksApi = {
+  list: (projectId: string) =>
+    http.get<WebhookEndpoint[]>(`/dashboard/projects/${projectId}/webhooks`),
+  upsert: (projectId: string, body: AddWebhookInput) =>
+    http.post<WebhookEndpoint>(`/dashboard/projects/${projectId}/webhooks`, body),
 };
 
 export interface BankDetails { bankName: string; accountNumber: string; accountName: string; subAccount?: string; }

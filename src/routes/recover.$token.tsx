@@ -72,7 +72,7 @@ function RecoverPage() {
           <div className="mt-4">
             <div className="mb-1.5 text-[12px] font-semibold text-ink-2">New card</div>
             <input
-              placeholder="1234 1234 1234 1234"
+              placeholder="Enter 16-digit card number"
               className="w-full rounded-[10px] border border-line bg-surface px-3.5 py-2.5 text-[13px] placeholder:text-ink-4 focus:border-yellow focus:outline-none"
             />
           </div>

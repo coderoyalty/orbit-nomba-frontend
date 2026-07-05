@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, redirect } from "@tanstack/react-router";
 import { AuthShell } from "../components/AuthShell";
 import { Button, Field, TextInput } from "../components/ui";
 import { authApi } from "../lib/api";
@@ -11,6 +11,15 @@ export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
     registered: search.registered === true || search.registered === "true",
   }),
+  beforeLoad: async () => {
+    const snap = authStore.getSnapshot();
+    if (snap.status === "loading") {
+      await authStore.refresh();
+    }
+    if (authStore.getSnapshot().status === "authed") {
+      throw redirect({ to: "/app" });
+    }
+  },
   component: LoginPage,
 });
 
@@ -63,7 +72,7 @@ function LoginPage() {
         <Field label="Work email">
           <TextInput
             type="email"
-            placeholder="you@company.com"
+            placeholder="Enter corporate email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
@@ -72,7 +81,7 @@ function LoginPage() {
         <Field label="Password">
           <TextInput
             type="password"
-            placeholder="••••••••"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}

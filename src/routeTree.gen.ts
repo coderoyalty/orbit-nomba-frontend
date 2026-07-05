@@ -18,17 +18,16 @@ import { Route as AppIndexRouteImport } from "./routes/app.index"
 import { Route as RecoverTokenRouteImport } from "./routes/recover.$token"
 import { Route as PortalTokenRouteImport } from "./routes/portal.$token"
 import { Route as CheckoutSessionRouteImport } from "./routes/checkout.$session"
-import { Route as AppWebhooksRouteImport } from "./routes/app.webhooks"
-import { Route as AppSubscribersRouteImport } from "./routes/app.subscribers"
-import { Route as AppPlansRouteImport } from "./routes/app.plans"
 import { Route as AppInvoicesRouteImport } from "./routes/app.invoices"
-import { Route as AppDunningRouteImport } from "./routes/app.dunning"
-import { Route as AppBillingRouteImport } from "./routes/app.billing"
-import { Route as AppApiKeysRouteImport } from "./routes/app.api-keys"
-import { Route as AppProjectsIndexRouteImport } from "./routes/app.projects.index"
-import { Route as AppSubscribersIdRouteImport } from "./routes/app.subscribers.$id"
-import { Route as AppSettingsPayoutsRouteImport } from "./routes/app.settings.payouts"
-import { Route as AppProjectsNewRouteImport } from "./routes/app.projects.new"
+import { Route as AppProjectIdIndexRouteImport } from "./routes/app.$projectId.index"
+import { Route as AppProjectIdWebhooksRouteImport } from "./routes/app.$projectId.webhooks"
+import { Route as AppProjectIdPlansRouteImport } from "./routes/app.$projectId.plans"
+import { Route as AppProjectIdDunningRouteImport } from "./routes/app.$projectId.dunning"
+import { Route as AppProjectIdBillingRouteImport } from "./routes/app.$projectId.billing"
+import { Route as AppProjectIdApiKeysRouteImport } from "./routes/app.$projectId.api-keys"
+import { Route as AppProjectIdSubscribersIndexRouteImport } from "./routes/app.$projectId.subscribers.index"
+import { Route as AppProjectIdSubscribersIdRouteImport } from "./routes/app.$projectId.subscribers.$id"
+import { Route as AppProjectIdSettingsPayoutsRouteImport } from "./routes/app.$projectId.settings.payouts"
 
 const RegisterRoute = RegisterRouteImport.update({
   id: "/register",
@@ -75,104 +74,100 @@ const CheckoutSessionRoute = CheckoutSessionRouteImport.update({
   path: "/checkout/$session",
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppWebhooksRoute = AppWebhooksRouteImport.update({
-  id: "/webhooks",
-  path: "/webhooks",
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSubscribersRoute = AppSubscribersRouteImport.update({
-  id: "/subscribers",
-  path: "/subscribers",
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPlansRoute = AppPlansRouteImport.update({
-  id: "/plans",
-  path: "/plans",
-  getParentRoute: () => AppRoute,
-} as any)
 const AppInvoicesRoute = AppInvoicesRouteImport.update({
   id: "/invoices",
   path: "/invoices",
   getParentRoute: () => AppRoute,
 } as any)
-const AppDunningRoute = AppDunningRouteImport.update({
-  id: "/dunning",
-  path: "/dunning",
+const AppProjectIdIndexRoute = AppProjectIdIndexRouteImport.update({
+  id: "/$projectId/",
+  path: "/$projectId/",
   getParentRoute: () => AppRoute,
 } as any)
-const AppBillingRoute = AppBillingRouteImport.update({
-  id: "/billing",
-  path: "/billing",
+const AppProjectIdWebhooksRoute = AppProjectIdWebhooksRouteImport.update({
+  id: "/$projectId/webhooks",
+  path: "/$projectId/webhooks",
   getParentRoute: () => AppRoute,
 } as any)
-const AppApiKeysRoute = AppApiKeysRouteImport.update({
-  id: "/api-keys",
-  path: "/api-keys",
+const AppProjectIdPlansRoute = AppProjectIdPlansRouteImport.update({
+  id: "/$projectId/plans",
+  path: "/$projectId/plans",
   getParentRoute: () => AppRoute,
 } as any)
-const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
-  id: "/projects/",
-  path: "/projects/",
+const AppProjectIdDunningRoute = AppProjectIdDunningRouteImport.update({
+  id: "/$projectId/dunning",
+  path: "/$projectId/dunning",
   getParentRoute: () => AppRoute,
 } as any)
-const AppSubscribersIdRoute = AppSubscribersIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
-  getParentRoute: () => AppSubscribersRoute,
-} as any)
-const AppSettingsPayoutsRoute = AppSettingsPayoutsRouteImport.update({
-  id: "/settings/payouts",
-  path: "/settings/payouts",
+const AppProjectIdBillingRoute = AppProjectIdBillingRouteImport.update({
+  id: "/$projectId/billing",
+  path: "/$projectId/billing",
   getParentRoute: () => AppRoute,
 } as any)
-const AppProjectsNewRoute = AppProjectsNewRouteImport.update({
-  id: "/projects/new",
-  path: "/projects/new",
+const AppProjectIdApiKeysRoute = AppProjectIdApiKeysRouteImport.update({
+  id: "/$projectId/api-keys",
+  path: "/$projectId/api-keys",
   getParentRoute: () => AppRoute,
 } as any)
+const AppProjectIdSubscribersIndexRoute =
+  AppProjectIdSubscribersIndexRouteImport.update({
+    id: "/$projectId/subscribers/",
+    path: "/$projectId/subscribers/",
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppProjectIdSubscribersIdRoute =
+  AppProjectIdSubscribersIdRouteImport.update({
+    id: "/$projectId/subscribers/$id",
+    path: "/$projectId/subscribers/$id",
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppProjectIdSettingsPayoutsRoute =
+  AppProjectIdSettingsPayoutsRouteImport.update({
+    id: "/$projectId/settings/payouts",
+    path: "/$projectId/settings/payouts",
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute
   "/app": typeof AppRouteWithChildren
   "/login": typeof LoginRoute
   "/register": typeof RegisterRoute
-  "/app/api-keys": typeof AppApiKeysRoute
-  "/app/billing": typeof AppBillingRoute
-  "/app/dunning": typeof AppDunningRoute
   "/app/invoices": typeof AppInvoicesRoute
-  "/app/plans": typeof AppPlansRoute
-  "/app/subscribers": typeof AppSubscribersRouteWithChildren
-  "/app/webhooks": typeof AppWebhooksRoute
   "/checkout/$session": typeof CheckoutSessionRoute
   "/portal/$token": typeof PortalTokenRoute
   "/recover/$token": typeof RecoverTokenRoute
   "/app/": typeof AppIndexRoute
   "/portal/": typeof PortalIndexRoute
-  "/app/projects/new": typeof AppProjectsNewRoute
-  "/app/settings/payouts": typeof AppSettingsPayoutsRoute
-  "/app/subscribers/$id": typeof AppSubscribersIdRoute
-  "/app/projects/": typeof AppProjectsIndexRoute
+  "/app/$projectId/api-keys": typeof AppProjectIdApiKeysRoute
+  "/app/$projectId/billing": typeof AppProjectIdBillingRoute
+  "/app/$projectId/dunning": typeof AppProjectIdDunningRoute
+  "/app/$projectId/plans": typeof AppProjectIdPlansRoute
+  "/app/$projectId/webhooks": typeof AppProjectIdWebhooksRoute
+  "/app/$projectId/": typeof AppProjectIdIndexRoute
+  "/app/$projectId/settings/payouts": typeof AppProjectIdSettingsPayoutsRoute
+  "/app/$projectId/subscribers/$id": typeof AppProjectIdSubscribersIdRoute
+  "/app/$projectId/subscribers/": typeof AppProjectIdSubscribersIndexRoute
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute
   "/login": typeof LoginRoute
   "/register": typeof RegisterRoute
-  "/app/api-keys": typeof AppApiKeysRoute
-  "/app/billing": typeof AppBillingRoute
-  "/app/dunning": typeof AppDunningRoute
   "/app/invoices": typeof AppInvoicesRoute
-  "/app/plans": typeof AppPlansRoute
-  "/app/subscribers": typeof AppSubscribersRouteWithChildren
-  "/app/webhooks": typeof AppWebhooksRoute
   "/checkout/$session": typeof CheckoutSessionRoute
   "/portal/$token": typeof PortalTokenRoute
   "/recover/$token": typeof RecoverTokenRoute
   "/app": typeof AppIndexRoute
   "/portal": typeof PortalIndexRoute
-  "/app/projects/new": typeof AppProjectsNewRoute
-  "/app/settings/payouts": typeof AppSettingsPayoutsRoute
-  "/app/subscribers/$id": typeof AppSubscribersIdRoute
-  "/app/projects": typeof AppProjectsIndexRoute
+  "/app/$projectId/api-keys": typeof AppProjectIdApiKeysRoute
+  "/app/$projectId/billing": typeof AppProjectIdBillingRoute
+  "/app/$projectId/dunning": typeof AppProjectIdDunningRoute
+  "/app/$projectId/plans": typeof AppProjectIdPlansRoute
+  "/app/$projectId/webhooks": typeof AppProjectIdWebhooksRoute
+  "/app/$projectId": typeof AppProjectIdIndexRoute
+  "/app/$projectId/settings/payouts": typeof AppProjectIdSettingsPayoutsRoute
+  "/app/$projectId/subscribers/$id": typeof AppProjectIdSubscribersIdRoute
+  "/app/$projectId/subscribers": typeof AppProjectIdSubscribersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -180,22 +175,21 @@ export interface FileRoutesById {
   "/app": typeof AppRouteWithChildren
   "/login": typeof LoginRoute
   "/register": typeof RegisterRoute
-  "/app/api-keys": typeof AppApiKeysRoute
-  "/app/billing": typeof AppBillingRoute
-  "/app/dunning": typeof AppDunningRoute
   "/app/invoices": typeof AppInvoicesRoute
-  "/app/plans": typeof AppPlansRoute
-  "/app/subscribers": typeof AppSubscribersRouteWithChildren
-  "/app/webhooks": typeof AppWebhooksRoute
   "/checkout/$session": typeof CheckoutSessionRoute
   "/portal/$token": typeof PortalTokenRoute
   "/recover/$token": typeof RecoverTokenRoute
   "/app/": typeof AppIndexRoute
   "/portal/": typeof PortalIndexRoute
-  "/app/projects/new": typeof AppProjectsNewRoute
-  "/app/settings/payouts": typeof AppSettingsPayoutsRoute
-  "/app/subscribers/$id": typeof AppSubscribersIdRoute
-  "/app/projects/": typeof AppProjectsIndexRoute
+  "/app/$projectId/api-keys": typeof AppProjectIdApiKeysRoute
+  "/app/$projectId/billing": typeof AppProjectIdBillingRoute
+  "/app/$projectId/dunning": typeof AppProjectIdDunningRoute
+  "/app/$projectId/plans": typeof AppProjectIdPlansRoute
+  "/app/$projectId/webhooks": typeof AppProjectIdWebhooksRoute
+  "/app/$projectId/": typeof AppProjectIdIndexRoute
+  "/app/$projectId/settings/payouts": typeof AppProjectIdSettingsPayoutsRoute
+  "/app/$projectId/subscribers/$id": typeof AppProjectIdSubscribersIdRoute
+  "/app/$projectId/subscribers/": typeof AppProjectIdSubscribersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -204,65 +198,62 @@ export interface FileRouteTypes {
     | "/app"
     | "/login"
     | "/register"
-    | "/app/api-keys"
-    | "/app/billing"
-    | "/app/dunning"
     | "/app/invoices"
-    | "/app/plans"
-    | "/app/subscribers"
-    | "/app/webhooks"
     | "/checkout/$session"
     | "/portal/$token"
     | "/recover/$token"
     | "/app/"
     | "/portal/"
-    | "/app/projects/new"
-    | "/app/settings/payouts"
-    | "/app/subscribers/$id"
-    | "/app/projects/"
+    | "/app/$projectId/api-keys"
+    | "/app/$projectId/billing"
+    | "/app/$projectId/dunning"
+    | "/app/$projectId/plans"
+    | "/app/$projectId/webhooks"
+    | "/app/$projectId/"
+    | "/app/$projectId/settings/payouts"
+    | "/app/$projectId/subscribers/$id"
+    | "/app/$projectId/subscribers/"
   fileRoutesByTo: FileRoutesByTo
   to:
     | "/"
     | "/login"
     | "/register"
-    | "/app/api-keys"
-    | "/app/billing"
-    | "/app/dunning"
     | "/app/invoices"
-    | "/app/plans"
-    | "/app/subscribers"
-    | "/app/webhooks"
     | "/checkout/$session"
     | "/portal/$token"
     | "/recover/$token"
     | "/app"
     | "/portal"
-    | "/app/projects/new"
-    | "/app/settings/payouts"
-    | "/app/subscribers/$id"
-    | "/app/projects"
+    | "/app/$projectId/api-keys"
+    | "/app/$projectId/billing"
+    | "/app/$projectId/dunning"
+    | "/app/$projectId/plans"
+    | "/app/$projectId/webhooks"
+    | "/app/$projectId"
+    | "/app/$projectId/settings/payouts"
+    | "/app/$projectId/subscribers/$id"
+    | "/app/$projectId/subscribers"
   id:
     | "__root__"
     | "/"
     | "/app"
     | "/login"
     | "/register"
-    | "/app/api-keys"
-    | "/app/billing"
-    | "/app/dunning"
     | "/app/invoices"
-    | "/app/plans"
-    | "/app/subscribers"
-    | "/app/webhooks"
     | "/checkout/$session"
     | "/portal/$token"
     | "/recover/$token"
     | "/app/"
     | "/portal/"
-    | "/app/projects/new"
-    | "/app/settings/payouts"
-    | "/app/subscribers/$id"
-    | "/app/projects/"
+    | "/app/$projectId/api-keys"
+    | "/app/$projectId/billing"
+    | "/app/$projectId/dunning"
+    | "/app/$projectId/plans"
+    | "/app/$projectId/webhooks"
+    | "/app/$projectId/"
+    | "/app/$projectId/settings/payouts"
+    | "/app/$projectId/subscribers/$id"
+    | "/app/$projectId/subscribers/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -341,27 +332,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof CheckoutSessionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    "/app/webhooks": {
-      id: "/app/webhooks"
-      path: "/webhooks"
-      fullPath: "/app/webhooks"
-      preLoaderRoute: typeof AppWebhooksRouteImport
-      parentRoute: typeof AppRoute
-    }
-    "/app/subscribers": {
-      id: "/app/subscribers"
-      path: "/subscribers"
-      fullPath: "/app/subscribers"
-      preLoaderRoute: typeof AppSubscribersRouteImport
-      parentRoute: typeof AppRoute
-    }
-    "/app/plans": {
-      id: "/app/plans"
-      path: "/plans"
-      fullPath: "/app/plans"
-      preLoaderRoute: typeof AppPlansRouteImport
-      parentRoute: typeof AppRoute
-    }
     "/app/invoices": {
       id: "/app/invoices"
       path: "/invoices"
@@ -369,96 +339,98 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppInvoicesRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/dunning": {
-      id: "/app/dunning"
-      path: "/dunning"
-      fullPath: "/app/dunning"
-      preLoaderRoute: typeof AppDunningRouteImport
+    "/app/$projectId/": {
+      id: "/app/$projectId/"
+      path: "/$projectId"
+      fullPath: "/app/$projectId/"
+      preLoaderRoute: typeof AppProjectIdIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/billing": {
-      id: "/app/billing"
-      path: "/billing"
-      fullPath: "/app/billing"
-      preLoaderRoute: typeof AppBillingRouteImport
+    "/app/$projectId/webhooks": {
+      id: "/app/$projectId/webhooks"
+      path: "/$projectId/webhooks"
+      fullPath: "/app/$projectId/webhooks"
+      preLoaderRoute: typeof AppProjectIdWebhooksRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/api-keys": {
-      id: "/app/api-keys"
-      path: "/api-keys"
-      fullPath: "/app/api-keys"
-      preLoaderRoute: typeof AppApiKeysRouteImport
+    "/app/$projectId/plans": {
+      id: "/app/$projectId/plans"
+      path: "/$projectId/plans"
+      fullPath: "/app/$projectId/plans"
+      preLoaderRoute: typeof AppProjectIdPlansRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/projects/": {
-      id: "/app/projects/"
-      path: "/projects"
-      fullPath: "/app/projects/"
-      preLoaderRoute: typeof AppProjectsIndexRouteImport
+    "/app/$projectId/dunning": {
+      id: "/app/$projectId/dunning"
+      path: "/$projectId/dunning"
+      fullPath: "/app/$projectId/dunning"
+      preLoaderRoute: typeof AppProjectIdDunningRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/subscribers/$id": {
-      id: "/app/subscribers/$id"
-      path: "/$id"
-      fullPath: "/app/subscribers/$id"
-      preLoaderRoute: typeof AppSubscribersIdRouteImport
-      parentRoute: typeof AppSubscribersRoute
-    }
-    "/app/settings/payouts": {
-      id: "/app/settings/payouts"
-      path: "/settings/payouts"
-      fullPath: "/app/settings/payouts"
-      preLoaderRoute: typeof AppSettingsPayoutsRouteImport
+    "/app/$projectId/billing": {
+      id: "/app/$projectId/billing"
+      path: "/$projectId/billing"
+      fullPath: "/app/$projectId/billing"
+      preLoaderRoute: typeof AppProjectIdBillingRouteImport
       parentRoute: typeof AppRoute
     }
-    "/app/projects/new": {
-      id: "/app/projects/new"
-      path: "/projects/new"
-      fullPath: "/app/projects/new"
-      preLoaderRoute: typeof AppProjectsNewRouteImport
+    "/app/$projectId/api-keys": {
+      id: "/app/$projectId/api-keys"
+      path: "/$projectId/api-keys"
+      fullPath: "/app/$projectId/api-keys"
+      preLoaderRoute: typeof AppProjectIdApiKeysRouteImport
+      parentRoute: typeof AppRoute
+    }
+    "/app/$projectId/subscribers/": {
+      id: "/app/$projectId/subscribers/"
+      path: "/$projectId/subscribers"
+      fullPath: "/app/$projectId/subscribers/"
+      preLoaderRoute: typeof AppProjectIdSubscribersIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    "/app/$projectId/subscribers/$id": {
+      id: "/app/$projectId/subscribers/$id"
+      path: "/$projectId/subscribers/$id"
+      fullPath: "/app/$projectId/subscribers/$id"
+      preLoaderRoute: typeof AppProjectIdSubscribersIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    "/app/$projectId/settings/payouts": {
+      id: "/app/$projectId/settings/payouts"
+      path: "/$projectId/settings/payouts"
+      fullPath: "/app/$projectId/settings/payouts"
+      preLoaderRoute: typeof AppProjectIdSettingsPayoutsRouteImport
       parentRoute: typeof AppRoute
     }
   }
 }
 
-interface AppSubscribersRouteChildren {
-  AppSubscribersIdRoute: typeof AppSubscribersIdRoute
-}
-
-const AppSubscribersRouteChildren: AppSubscribersRouteChildren = {
-  AppSubscribersIdRoute: AppSubscribersIdRoute,
-}
-
-const AppSubscribersRouteWithChildren = AppSubscribersRoute._addFileChildren(
-  AppSubscribersRouteChildren,
-)
-
 interface AppRouteChildren {
-  AppApiKeysRoute: typeof AppApiKeysRoute
-  AppBillingRoute: typeof AppBillingRoute
-  AppDunningRoute: typeof AppDunningRoute
   AppInvoicesRoute: typeof AppInvoicesRoute
-  AppPlansRoute: typeof AppPlansRoute
-  AppSubscribersRoute: typeof AppSubscribersRouteWithChildren
-  AppWebhooksRoute: typeof AppWebhooksRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppProjectsNewRoute: typeof AppProjectsNewRoute
-  AppSettingsPayoutsRoute: typeof AppSettingsPayoutsRoute
-  AppProjectsIndexRoute: typeof AppProjectsIndexRoute
+  AppProjectIdApiKeysRoute: typeof AppProjectIdApiKeysRoute
+  AppProjectIdBillingRoute: typeof AppProjectIdBillingRoute
+  AppProjectIdDunningRoute: typeof AppProjectIdDunningRoute
+  AppProjectIdPlansRoute: typeof AppProjectIdPlansRoute
+  AppProjectIdWebhooksRoute: typeof AppProjectIdWebhooksRoute
+  AppProjectIdIndexRoute: typeof AppProjectIdIndexRoute
+  AppProjectIdSettingsPayoutsRoute: typeof AppProjectIdSettingsPayoutsRoute
+  AppProjectIdSubscribersIdRoute: typeof AppProjectIdSubscribersIdRoute
+  AppProjectIdSubscribersIndexRoute: typeof AppProjectIdSubscribersIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppApiKeysRoute: AppApiKeysRoute,
-  AppBillingRoute: AppBillingRoute,
-  AppDunningRoute: AppDunningRoute,
   AppInvoicesRoute: AppInvoicesRoute,
-  AppPlansRoute: AppPlansRoute,
-  AppSubscribersRoute: AppSubscribersRouteWithChildren,
-  AppWebhooksRoute: AppWebhooksRoute,
   AppIndexRoute: AppIndexRoute,
-  AppProjectsNewRoute: AppProjectsNewRoute,
-  AppSettingsPayoutsRoute: AppSettingsPayoutsRoute,
-  AppProjectsIndexRoute: AppProjectsIndexRoute,
+  AppProjectIdApiKeysRoute: AppProjectIdApiKeysRoute,
+  AppProjectIdBillingRoute: AppProjectIdBillingRoute,
+  AppProjectIdDunningRoute: AppProjectIdDunningRoute,
+  AppProjectIdPlansRoute: AppProjectIdPlansRoute,
+  AppProjectIdWebhooksRoute: AppProjectIdWebhooksRoute,
+  AppProjectIdIndexRoute: AppProjectIdIndexRoute,
+  AppProjectIdSettingsPayoutsRoute: AppProjectIdSettingsPayoutsRoute,
+  AppProjectIdSubscribersIdRoute: AppProjectIdSubscribersIdRoute,
+  AppProjectIdSubscribersIndexRoute: AppProjectIdSubscribersIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

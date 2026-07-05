@@ -51,7 +51,7 @@ function PortalGate() {
             <div className="mb-1.5 text-[12px] font-semibold text-ink-2">Email</div>
             <input
               type="email"
-              placeholder="you@email.com"
+              placeholder="Enter subscriber email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && email && setSent(true)}
