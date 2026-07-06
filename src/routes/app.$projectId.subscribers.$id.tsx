@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { subscribersApi, formatNaira, STATE_META } from "../lib/api";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { subscribersApi, portalApi, formatNaira, STATE_META } from "../lib/api";
 import { PageHeader, Card, Badge, Button } from "../components/ui";
 import { Ledger } from "../features/billing/Ledger";
 import { useProjects } from "../components/ProjectContext";
+import { useToast } from "../components/Toast";
 
 export const Route = createFileRoute("/app/$projectId/subscribers/$id")({
   component: SubscriberDetail,
@@ -32,11 +33,23 @@ function formatDate(dateStr?: string | null) {
 function SubscriberDetail() {
   const { projectId, id } = Route.useParams();
   const { current } = useProjects();
+  const toast = useToast();
 
   const { data: subscriptions, isLoading } = useQuery({
     queryKey: ["subscriptions", current?.id],
     queryFn: () => subscribersApi.listSubscriptions(current!.id),
     enabled: !!current,
+  });
+
+  const generatePortal = useMutation({
+    mutationFn: () => portalApi.createSession(id),
+    onSuccess: (data) => {
+      toast("Portal session token generated!", "success");
+      window.open(`/portal/${data.token}`, "_blank");
+    },
+    onError: (err: any) => {
+      toast(err?.message || "Failed to generate portal session", "error");
+    },
   });
 
   if (!current) {
@@ -146,7 +159,23 @@ function SubscriberDetail() {
           <PageHeader
             title={sub.customer?.name || "Anonymous Customer"}
             subtitle={sub.customer?.email || ""}
-            action={<Badge tone={meta?.tone ?? "gray"}>{meta?.label ?? sub.status}</Badge>}
+            action={
+              <div className="flex items-center gap-2.5">
+                <Badge tone={meta?.tone ?? "gray"}>{meta?.label ?? sub.status}</Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generatePortal.mutate()}
+                  disabled={generatePortal.isPending}
+                  className="flex items-center gap-1.5"
+                >
+                  <span>{generatePortal.isPending ? "Generating..." : "Customer Portal"}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-3.5 w-3.5 text-ink-3">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                  </svg>
+                </Button>
+              </div>
+            }
           />
         </div>
       </div>

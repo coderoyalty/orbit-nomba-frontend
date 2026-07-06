@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { webhooksApi, devApi, type WebhookStatus, type AddWebhookInput, type WebhookEndpoint } from "../lib/api";
+import { webhooksApi, type AddWebhookInput, type WebhookEndpoint } from "../lib/api";
 import { PageHeader, Card, Badge, Button, Field, TextInput } from "../components/ui";
 import { useToast } from "../components/Toast";
 import { ApiError } from "../lib/http";
@@ -10,18 +10,6 @@ import { useProjects } from "../components/ProjectContext";
 export const Route = createFileRoute("/app/$projectId/webhooks")({
   component: WebhooksPage,
 });
-
-const DOT: Record<WebhookStatus, string> = {
-  "200": "bg-green",
-  retry: "bg-amber",
-  failed: "bg-red",
-};
-
-function statusLabel(s: WebhookStatus, when: string) {
-  if (s === "200") return `200 · ${when}`;
-  if (s === "retry") return `retry · ${when}`;
-  return `failed · ${when}`;
-}
 
 function WebhookForm({
   env,
@@ -192,12 +180,6 @@ function WebhooksPage() {
   const testWebhook = webhooks?.find((w) => w.environment === "test");
   const liveWebhook = webhooks?.find((w) => w.environment === "live");
 
-  // Load recent simulated events
-  const { data: events, isLoading: loadingEvents } = useQuery({
-    queryKey: ["webhook-events"],
-    queryFn: devApi.events,
-  });
-
   // Render both forms, sorting the currently active environment to the top of the stack
   const forms = [
     <WebhookForm
@@ -267,29 +249,6 @@ function WebhooksPage() {
             <p className="mt-4 text-[12px] leading-relaxed text-ink-4">
               Payload requests are signed with your secret using standard HMAC-SHA256 headers (`X-Orbit-Signature`).
             </p>
-          </Card>
-
-          {/* Simulated deliveries */}
-          <Card className="overflow-hidden rounded-[8px]">
-            <div className="flex items-center justify-between border-b border-line-2 px-5 py-3 bg-surface-2">
-              <span className="text-[12.5px] font-bold text-ink">Simulated deliveries</span>
-              <Badge tone="green">online</Badge>
-            </div>
-            {loadingEvents ? (
-              <div className="m-5 h-20 animate-pulse rounded-[10px] bg-surface-3" />
-            ) : (
-              <div className="py-1">
-                {events?.map((e) => (
-                  <div key={e.id} className="flex items-center gap-2.5 px-5 py-2.5 hover:bg-surface-3 transition-colors">
-                    <span className={`h-1.5 w-1.5 rounded-full ${DOT[e.status]}`} />
-                    <span className="font-mono text-[11px] text-ink">{e.event}</span>
-                    <span className="ml-auto text-[10.5px] text-ink-4">
-                      {statusLabel(e.status, e.when)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
           </Card>
         </div>
       </div>

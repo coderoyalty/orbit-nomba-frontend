@@ -223,10 +223,18 @@ function PlanDetailsDrawer({
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [trialDays, setTrialDays] = useState(0);
+  const [dunningEnabled, setDunningEnabled] = useState(true);
 
   // Edit Metadata Mutation
   const updateMetadata = useMutation({
-    mutationFn: () => plansApi.update(projectId, planId, { name, description }),
+    mutationFn: () =>
+      plansApi.update(projectId, planId, {
+        name,
+        description,
+        trial_days: trialDays,
+        dunning_enabled: dunningEnabled,
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["plans", projectId] });
       qc.invalidateQueries({ queryKey: ["plan", projectId, planId] });
@@ -242,6 +250,8 @@ function PlanDetailsDrawer({
     if (plan) {
       setName(plan.name);
       setDescription(plan.description || "");
+      setTrialDays(plan.trial_days || 0);
+      setDunningEnabled(plan.dunning_enabled ?? true);
     }
   }, [plan]);
 
@@ -395,11 +405,27 @@ function PlanDetailsDrawer({
             <Field label="Description">
               <TextInput value={description} onChange={(e) => setDescription(e.target.value)} />
             </Field>
-            {plan.trial_days > 0 && (
-              <div className="text-[12.5px] text-ink-3 bg-surface-2 p-2.5 rounded-[8px] border border-line-2/60">
-                <span className="font-semibold text-ink-2">Trial Period:</span> {plan.trial_days} day{plan.trial_days > 1 ? "s" : ""}
-              </div>
-            )}
+            <Field label="Trial period (days)" hint="Enter 0 or leave empty for no trial.">
+              <TextInput
+                inputMode="numeric"
+                value={trialDays.toString()}
+                onChange={(e) => setTrialDays(Number(e.target.value.replace(/[^\d]/g, "")) || 0)}
+              />
+            </Field>
+
+            <div className="flex items-center gap-2 pt-1 select-none">
+              <input
+                type="checkbox"
+                id="drawer-dunning-enabled"
+                checked={dunningEnabled}
+                onChange={(e) => setDunningEnabled(e.target.checked)}
+                className="h-4 w-4 rounded border-line text-yellow focus:ring-yellow cursor-pointer"
+              />
+              <label htmlFor="drawer-dunning-enabled" className="text-[12.5px] font-semibold text-ink-2 cursor-pointer">
+                Enable payment retries (Dunning)
+              </label>
+            </div>
+
             <Button
               variant="dark"
               size="sm"
