@@ -42,28 +42,48 @@ export function StateMachine() {
       </p>
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-        <Node name="incomplete" desc="awaiting first charge" tone="info" />
+        <Node name="incomplete" desc="awaiting setup" tone="default" />
         {ARROW}
-        <Node name="active" desc="access granted" tone="active" />
+        <Node name="trialing" desc="trial active" tone="info" />
         {ARROW}
-        <Node name="past_due" desc="in dunning" tone="warn" />
+        <Node name="active" desc="access active" tone="active" />
         {ARROW}
-        <Node name="unpaid" desc="dunning exhausted" tone="dead" />
+        <Node name="past_due" desc="in recovery" tone="warn" />
+        {ARROW}
+        <Node name="unpaid" desc="access suspended" tone="dead" />
+        {ARROW}
+        <Node name="canceled" desc="terminated" tone="dead" />
       </div>
 
-      <div className="mt-5 flex flex-wrap justify-center gap-x-10 gap-y-2 text-[11px] font-semibold">
-        <span className="flex items-center gap-1.5 text-green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 rotate-180">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-          past_due → active on recovery
-        </span>
-        <span className="flex items-center gap-1.5 text-red">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-            <path d="M12 5v14M5 12l7 7 7-7" />
-          </svg>
-          cancelled — user ends it (from any state)
-        </span>
+      <div className="mt-5 grid grid-cols-2 gap-4 border-t border-line-2 pt-5 text-[11px] font-semibold text-ink-3">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-blue" />
+            <span>incomplete ➔ active (checkout success)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-blue" />
+            <span>incomplete ➔ trialing (free trial start)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-yellow" />
+            <span>trialing ➔ active (trial ended & charged)</span>
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-amber" />
+            <span>active ➔ past_due (renewal charge failed)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-red" />
+            <span>past_due ➔ unpaid (dunning retries exhausted)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-red" />
+            <span>any state ➔ canceled (manual termination)</span>
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 rounded-[12px] bg-surface-2 p-4">
@@ -73,10 +93,10 @@ export function StateMachine() {
         </div>
         <div className="flex gap-2">
           {[
-            { day: "Day 1", note: "retry", live: true },
-            { day: "Day 3", note: "retry + email" },
-            { day: "Day 5", note: "retry" },
-            { day: "Day 7", note: "→ unpaid", dead: true },
+            { day: "Day 1", note: "1st retry", live: true },
+            { day: "Day 2", note: "2nd retry" },
+            { day: "Day 3", note: "3rd retry" },
+            { day: "Day 4", note: "→ unpaid/canceled", dead: true },
           ].map((s) => (
             <div
               key={s.day}

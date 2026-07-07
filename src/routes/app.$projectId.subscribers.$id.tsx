@@ -193,11 +193,11 @@ function SubscriberDetail() {
             <p className="text-[11.5px] text-ink-3 mb-3">Core subscription identifiers and product tiering.</p>
             <div className="divide-y divide-line-2">
               <Row label="Plan">
-                {sub.price?.plan_id ? (
+                {sub.price?.plan?.id ? (
                   <Link
                     to="/app/$projectId/plans"
                     params={{ projectId }}
-                    search={{ planId: sub.price.plan_id }}
+                    search={{ planId: sub.price.plan.id }}
                     className="text-yellow-deep hover:underline font-semibold"
                   >
                     {planName}

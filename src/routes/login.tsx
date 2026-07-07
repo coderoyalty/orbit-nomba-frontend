@@ -8,8 +8,8 @@ import { ApiError } from "../lib/http";
 import { useToast } from "../components/Toast";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    registered: search.registered === true || search.registered === "true",
+  validateSearch: (search: Record<string, unknown>): { registered?: boolean } => ({
+    registered: search.registered === true || search.registered === "true" || undefined,
   }),
   beforeLoad: async () => {
     const snap = authStore.getSnapshot();

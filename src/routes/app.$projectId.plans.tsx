@@ -9,7 +9,15 @@ import {
   koboToNaira,
   type Price,
 } from "../lib/api";
-import { PageHeader, Button, Badge, Card, Field, TextInput, AlertDialog } from "../components/ui";
+import {
+  PageHeader,
+  Button,
+  Badge,
+  Card,
+  Field,
+  TextInput,
+  AlertDialog,
+} from "../components/ui";
 import { PlanBuilder } from "../features/plans/PlanBuilder";
 import { useProjects } from "../components/ProjectContext";
 import { useToast } from "../components/Toast";
@@ -65,11 +73,11 @@ function PlansPage() {
         <Card className="mt-6 p-12 text-center">
           <div className="text-[14px] font-semibold">No project selected</div>
           <p className="mx-auto mt-1 max-w-xs text-[13px] text-ink-3">
-            Create or select a project first — plans, keys, and subscriptions all
-            belong to a project.
+            Create or select a project first — plans, keys, and subscriptions
+            all belong to a project.
           </p>
           <div className="mt-5">
-            <Button variant="primary" onClick={() => navigate({ to: "/app/projects/new" })}>
+            <Button variant="primary" onClick={() => navigate({ to: "/app" })}>
               + New project
             </Button>
           </div>
@@ -95,16 +103,24 @@ function PlansPage() {
       <div className="mt-6">
         {building ? (
           <Card className="p-6">
-            <h2 className="mb-1 text-[16px] font-bold tracking-[-0.02em]">Create a plan</h2>
+            <h2 className="mb-1 text-[16px] font-bold tracking-[-0.02em]">
+              Create a plan
+            </h2>
             <p className="mb-6 text-[13px] text-ink-3">
               Plans are the building block of subscriptions.
             </p>
-            <PlanBuilder projectId={current.id} onDone={() => setBuilding(false)} />
+            <PlanBuilder
+              projectId={current.id}
+              onDone={() => setBuilding(false)}
+            />
           </Card>
         ) : isLoading ? (
           <div className="space-y-3">
             {[0, 1].map((i) => (
-              <div key={i} className="h-[68px] animate-pulse rounded-[14px] bg-surface-3" />
+              <div
+                key={i}
+                className="h-[68px] animate-pulse rounded-[14px] bg-surface-3"
+              />
             ))}
           </div>
         ) : plans && plans.length > 0 ? (
@@ -112,19 +128,22 @@ function PlansPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-line-2 bg-surface-2/40">
-                  {["Plan", "Price", "Interval", "Trial Period", "Status"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
-                    >
-                      {h}
-                    </th>
-                  ))}
+                  {["Plan", "Price", "Interval", "Trial Period", "Status"].map(
+                    (h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
+                      >
+                        {h}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {plans.map((p) => {
-                  const price = p.prices?.find((pr) => pr.is_active) ?? p.prices?.[0];
+                  const price =
+                    p.prices?.find((pr) => pr.is_active) ?? p.prices?.[0];
                   return (
                     <tr
                       key={p.id}
@@ -132,8 +151,12 @@ function PlansPage() {
                       className="border-t border-line-2 first:border-t-0 hover:bg-surface-2 cursor-pointer transition-colors"
                     >
                       <td className="px-4 py-3.5">
-                        <div className="text-[13px] font-semibold">{p.name}</div>
-                        <div className="text-[11px] text-ink-4">{p.description || p.id}</div>
+                        <div className="text-[13px] font-semibold">
+                          {p.name}
+                        </div>
+                        <div className="text-[11px] text-ink-4">
+                          {p.description || p.id}
+                        </div>
                       </td>
                       <td className="px-4 py-3.5 text-[13px] font-semibold tnum">
                         {price ? formatNaira(price.unit_amount) : "—"}
@@ -142,7 +165,9 @@ function PlansPage() {
                         {priceLabel(price)}
                       </td>
                       <td className="px-4 py-3.5 text-[13px] text-ink-2">
-                        {p.trial_days > 0 ? `${p.trial_days} day${p.trial_days > 1 ? "s" : ""}` : "—"}
+                        {p.trial_days > 0
+                          ? `${p.trial_days} day${p.trial_days > 1 ? "s" : ""}`
+                          : "—"}
                       </td>
                       <td className="px-4 py-3.5 text-right">
                         <Badge tone={p.is_active ? "green" : "gray"}>
@@ -211,12 +236,23 @@ function PlanDetailsDrawer({
   projectId: string;
   planId: string;
   onClose: () => void;
-  setConfirmDialog: (config: { open: boolean; title: string; description: string; onConfirm: () => void } | null) => void;
+  setConfirmDialog: (
+    config: {
+      open: boolean;
+      title: string;
+      description: string;
+      onConfirm: () => void;
+    } | null,
+  ) => void;
 }) {
   const qc = useQueryClient();
   const toast = useToast();
 
-  const { data: plan, isLoading, error } = useQuery({
+  const {
+    data: plan,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["plan", projectId, planId],
     queryFn: () => plansApi.get(projectId, planId),
   });
@@ -260,7 +296,9 @@ function PlanDetailsDrawer({
   const [priceAmount, setPriceAmount] = useState("");
   const [priceChoice, setPriceChoice] = useState<PlanBillingChoice>("monthly");
   const [priceCustomCount, setPriceCustomCount] = useState("1");
-  const [priceCustomUnit, setPriceCustomUnit] = useState<"day" | "week" | "month" | "year">("month");
+  const [priceCustomUnit, setPriceCustomUnit] = useState<
+    "day" | "week" | "month" | "year"
+  >("month");
 
   const addPriceMutation = useMutation({
     mutationFn: () => {
@@ -302,7 +340,8 @@ function PlanDetailsDrawer({
 
   // Archive price state / mutation
   const archivePriceMutation = useMutation({
-    mutationFn: (priceId: string) => plansApi.archivePrice(projectId, planId, priceId),
+    mutationFn: (priceId: string) =>
+      plansApi.archivePrice(projectId, planId, priceId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["plans", projectId] });
       qc.invalidateQueries({ queryKey: ["plan", projectId, planId] });
@@ -342,7 +381,10 @@ function PlanDetailsDrawer({
   const cancelSubsMutation = useMutation({
     mutationFn: () => plansApi.cancelSubscriptions(projectId, planId),
     onSuccess: () => {
-      toast("All subscriptions for this plan have been scheduled for cancellation", "success");
+      toast(
+        "All subscriptions for this plan have been scheduled for cancellation",
+        "success",
+      );
       setConfirmCancel(false);
     },
     onError: (err: any) => {
@@ -366,7 +408,9 @@ function PlanDetailsDrawer({
     return (
       <div className="flex flex-col h-full justify-center items-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow border-t-transparent" />
-        <span className="mt-2 text-[13px] text-ink-3 font-semibold">Loading plan details...</span>
+        <span className="mt-2 text-[13px] text-ink-3 font-semibold">
+          Loading plan details...
+        </span>
       </div>
     );
   }
@@ -374,8 +418,12 @@ function PlanDetailsDrawer({
   if (error || !plan) {
     return (
       <div className="p-4 flex flex-col items-center justify-center h-full">
-        <div className="text-[14px] font-semibold text-red">Failed to load plan details</div>
-        <Button className="mt-4" onClick={onClose}>Close</Button>
+        <div className="text-[14px] font-semibold text-red">
+          Failed to load plan details
+        </div>
+        <Button className="mt-4" onClick={onClose}>
+          Close
+        </Button>
       </div>
     );
   }
@@ -386,10 +434,17 @@ function PlanDetailsDrawer({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-line-2 pb-4 mb-6">
           <div>
-            <h2 className="text-[18px] font-extrabold tracking-[-0.03em]">{plan.name}</h2>
-            <p className="text-[11px] font-mono text-ink-4 uppercase tracking-[0.05em]">{plan.id}</p>
+            <h2 className="text-[18px] font-extrabold tracking-[-0.03em]">
+              {plan.name}
+            </h2>
+            <p className="text-[11px] font-mono text-ink-4 uppercase tracking-[0.05em]">
+              {plan.id}
+            </p>
           </div>
-          <button onClick={onClose} className="text-ink-3 hover:text-ink text-[18px] font-bold p-1">
+          <button
+            onClick={onClose}
+            className="text-ink-3 hover:text-ink text-[18px] font-bold p-1"
+          >
             ✕
           </button>
         </div>
@@ -400,16 +455,29 @@ function PlanDetailsDrawer({
           <Card className="p-4 space-y-4">
             <h3 className="text-[13px] font-bold text-ink-2">Plan Details</h3>
             <Field label="Name">
-              <TextInput value={name} onChange={(e) => setName(e.target.value)} />
+              <TextInput
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </Field>
             <Field label="Description">
-              <TextInput value={description} onChange={(e) => setDescription(e.target.value)} />
+              <TextInput
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </Field>
-            <Field label="Trial period (days)" hint="Enter 0 or leave empty for no trial.">
+            <Field
+              label="Trial period (days)"
+              hint="Enter 0 or leave empty for no trial."
+            >
               <TextInput
                 inputMode="numeric"
                 value={trialDays.toString()}
-                onChange={(e) => setTrialDays(Number(e.target.value.replace(/[^\d]/g, "")) || 0)}
+                onChange={(e) =>
+                  setTrialDays(
+                    Number(e.target.value.replace(/[^\d]/g, "")) || 0,
+                  )
+                }
               />
             </Field>
 
@@ -421,7 +489,10 @@ function PlanDetailsDrawer({
                 onChange={(e) => setDunningEnabled(e.target.checked)}
                 className="h-4 w-4 rounded border-line text-yellow focus:ring-yellow cursor-pointer"
               />
-              <label htmlFor="drawer-dunning-enabled" className="text-[12.5px] font-semibold text-ink-2 cursor-pointer">
+              <label
+                htmlFor="drawer-dunning-enabled"
+                className="text-[12.5px] font-semibold text-ink-2 cursor-pointer"
+              >
                 Enable payment retries (Dunning)
               </label>
             </div>
@@ -441,7 +512,11 @@ function PlanDetailsDrawer({
             <div className="flex justify-between items-center">
               <h3 className="text-[13px] font-bold text-ink-2">Prices</h3>
               {!addingPrice && (
-                <Button variant="default" size="sm" onClick={() => setAddingPrice(true)}>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setAddingPrice(true)}
+                >
                   + Add price
                 </Button>
               )}
@@ -453,18 +528,24 @@ function PlanDetailsDrawer({
                 <h4 className="text-[12px] font-bold text-ink-2">New Price</h4>
                 <Field label="Amount (NGN)">
                   <div className="flex items-center rounded-[10px] border border-line bg-surface px-3.5 focus-within:border-yellow">
-                    <span className="text-[14px] font-semibold text-ink-3">₦</span>
+                    <span className="text-[14px] font-semibold text-ink-3">
+                      ₦
+                    </span>
                     <input
                       inputMode="numeric"
                       placeholder="Enter amount"
                       value={priceAmount}
-                      onChange={(e) => setPriceAmount(e.target.value.replace(/[^\d]/g, ""))}
+                      onChange={(e) =>
+                        setPriceAmount(e.target.value.replace(/[^\d]/g, ""))
+                      }
                       className="w-full bg-transparent px-2 py-2 text-[13px] tnum text-ink placeholder:text-ink-4 focus:outline-none"
                     />
                   </div>
                 </Field>
                 <div>
-                  <span className="mb-1.5 block text-[11px] font-semibold text-ink-3">Interval</span>
+                  <span className="mb-1.5 block text-[11px] font-semibold text-ink-3">
+                    Interval
+                  </span>
                   <div className="grid grid-cols-4 gap-2">
                     {CHOICES.map((opt) => (
                       <button
@@ -472,7 +553,9 @@ function PlanDetailsDrawer({
                         type="button"
                         onClick={() => setPriceChoice(opt.value)}
                         className={`rounded-[8px] border px-1 py-1.5 text-center text-[12px] transition-colors ${
-                          priceChoice === opt.value ? "border-yellow bg-cream text-yellow-ink font-bold" : "border-line bg-surface hover:bg-surface-2"
+                          priceChoice === opt.value
+                            ? "border-yellow bg-cream text-yellow-ink font-bold"
+                            : "border-line bg-surface hover:bg-surface-2"
                         }`}
                       >
                         {opt.label}
@@ -488,7 +571,11 @@ function PlanDetailsDrawer({
                         <TextInput
                           inputMode="numeric"
                           value={priceCustomCount}
-                          onChange={(e) => setPriceCustomCount(e.target.value.replace(/[^\d]/g, ""))}
+                          onChange={(e) =>
+                            setPriceCustomCount(
+                              e.target.value.replace(/[^\d]/g, ""),
+                            )
+                          }
                         />
                       </Field>
                     </div>
@@ -496,7 +583,9 @@ function PlanDetailsDrawer({
                       <Field label="Unit">
                         <select
                           value={priceCustomUnit}
-                          onChange={(e) => setPriceCustomUnit(e.target.value as any)}
+                          onChange={(e) =>
+                            setPriceCustomUnit(e.target.value as any)
+                          }
                           className="w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[13px] text-ink focus:border-yellow focus:outline-none"
                         >
                           <option value="day">Day(s)</option>
@@ -517,7 +606,11 @@ function PlanDetailsDrawer({
                   >
                     {addPriceMutation.isPending ? "Adding..." : "Add"}
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setAddingPrice(false)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setAddingPrice(false)}
+                  >
                     Cancel
                   </Button>
                 </div>
@@ -529,7 +622,10 @@ function PlanDetailsDrawer({
               {plan.prices?.map((pr: Price) => {
                 const isEditing = editingPriceId === pr.id;
                 return (
-                  <div key={pr.id} className="flex flex-col p-3 rounded-[10px] border border-line bg-surface-2 gap-2">
+                  <div
+                    key={pr.id}
+                    className="flex flex-col p-3 rounded-[10px] border border-line bg-surface-2 gap-2"
+                  >
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="text-[13.5px] font-extrabold tracking-[-0.02em] tnum">
@@ -549,7 +645,9 @@ function PlanDetailsDrawer({
                         <button
                           onClick={() => {
                             setEditingPriceId(pr.id);
-                            setEditPriceAmount(String(koboToNaira(pr.unit_amount)));
+                            setEditPriceAmount(
+                              String(koboToNaira(pr.unit_amount)),
+                            );
                           }}
                           className="text-[11px] font-bold text-yellow-deep hover:underline"
                         >
@@ -560,7 +658,8 @@ function PlanDetailsDrawer({
                             setConfirmDialog({
                               open: true,
                               title: "Archive Price",
-                              description: "Are you sure you want to archive this price? Active subscriptions will not be affected, but no new subscriptions can be created with this price.",
+                              description:
+                                "Are you sure you want to archive this price? Active subscriptions will not be affected, but no new subscriptions can be created with this price.",
                               onConfirm: () => {
                                 archivePriceMutation.mutate(pr.id);
                                 setConfirmDialog(null);
@@ -579,11 +678,17 @@ function PlanDetailsDrawer({
                       <div className="mt-2 space-y-2 border-t border-line-2 pt-2">
                         <Field label="New Amount (NGN)">
                           <div className="flex items-center rounded-[8px] border border-line bg-surface px-2.5">
-                            <span className="text-[13px] font-semibold text-ink-3">₦</span>
+                            <span className="text-[13px] font-semibold text-ink-3">
+                              ₦
+                            </span>
                             <input
                               inputMode="numeric"
                               value={editPriceAmount}
-                              onChange={(e) => setEditPriceAmount(e.target.value.replace(/[^\d]/g, ""))}
+                              onChange={(e) =>
+                                setEditPriceAmount(
+                                  e.target.value.replace(/[^\d]/g, ""),
+                                )
+                              }
                               className="w-full bg-transparent px-1.5 py-1.5 text-[12px] tnum text-ink focus:outline-none"
                             />
                           </div>
@@ -593,11 +698,19 @@ function PlanDetailsDrawer({
                             variant="primary"
                             size="sm"
                             onClick={() => changePriceMutation.mutate(pr.id)}
-                            disabled={changePriceMutation.isPending || !editPriceAmount}
+                            disabled={
+                              changePriceMutation.isPending || !editPriceAmount
+                            }
                           >
-                            {changePriceMutation.isPending ? "Updating..." : "Update Amount"}
+                            {changePriceMutation.isPending
+                              ? "Updating..."
+                              : "Update Amount"}
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => setEditingPriceId(null)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingPriceId(null)}
+                          >
                             Cancel
                           </Button>
                         </div>
@@ -607,7 +720,9 @@ function PlanDetailsDrawer({
                 );
               })}
               {(!plan.prices || plan.prices.length === 0) && (
-                <div className="text-[12px] text-ink-4 text-center py-2">No prices configured for this plan.</div>
+                <div className="text-[12px] text-ink-4 text-center py-2">
+                  No prices configured for this plan.
+                </div>
               )}
             </div>
           </Card>
@@ -616,12 +731,19 @@ function PlanDetailsDrawer({
 
       {/* Danger Zone / Footer */}
       <div className="border-t border-line-2 pt-6 mt-6 space-y-3.5 bg-surface">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.08em] text-red">Danger Zone</h3>
+        <h3 className="text-[11px] font-bold uppercase tracking-[0.08em] text-red">
+          Danger Zone
+        </h3>
         <div className="flex flex-col gap-2 bg-red-bg/25 border border-red/10 p-4 rounded-[12px]">
           <div className="flex items-center justify-between">
             <div className="pr-4">
-              <div className="text-[13px] font-bold text-ink">Cancel Active Subscriptions</div>
-              <p className="text-[11.5px] text-ink-3 mt-0.5">Immediately schedule cancellation for all active subscribers under this plan.</p>
+              <div className="text-[13px] font-bold text-ink">
+                Cancel Active Subscriptions
+              </div>
+              <p className="text-[11.5px] text-ink-3 mt-0.5">
+                Immediately schedule cancellation for all active subscribers
+                under this plan.
+              </p>
             </div>
             {confirmCancel ? (
               <div className="flex gap-2 shrink-0">
@@ -633,12 +755,21 @@ function PlanDetailsDrawer({
                 >
                   Confirm
                 </Button>
-                <Button variant="default" size="sm" onClick={() => setConfirmCancel(false)}>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setConfirmCancel(false)}
+                >
                   Cancel
                 </Button>
               </div>
             ) : (
-              <Button variant="danger" size="sm" className="shrink-0" onClick={() => setConfirmCancel(true)}>
+              <Button
+                variant="danger"
+                size="sm"
+                className="shrink-0"
+                onClick={() => setConfirmCancel(true)}
+              >
                 Cancel All
               </Button>
             )}
@@ -646,8 +777,12 @@ function PlanDetailsDrawer({
 
           <div className="border-t border-line-2/50 my-2 pt-2 flex items-center justify-between">
             <div>
-              <div className="text-[13px] font-bold text-ink">Deprecate Plan</div>
-              <p className="text-[11.5px] text-ink-3 mt-0.5">Archive the plan. No new checkouts or signups can use it.</p>
+              <div className="text-[13px] font-bold text-ink">
+                Deprecate Plan
+              </div>
+              <p className="text-[11.5px] text-ink-3 mt-0.5">
+                Archive the plan. No new checkouts or signups can use it.
+              </p>
             </div>
             <Button
               variant="danger"
@@ -657,7 +792,8 @@ function PlanDetailsDrawer({
                 setConfirmDialog({
                   open: true,
                   title: "Deprecate Plan",
-                  description: "Are you sure you want to deprecate/delete this plan? This action cannot be undone.",
+                  description:
+                    "Are you sure you want to deprecate/delete this plan? This action cannot be undone.",
                   onConfirm: () => {
                     deprecateMutation.mutate();
                     setConfirmDialog(null);

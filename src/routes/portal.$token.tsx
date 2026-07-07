@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { portalApi, formatNaira, priceLabel, type BackendSubscription, type Plan } from "../lib/api";
+import { portalApi, formatNaira, priceLabel } from "../lib/api";
 import { HostedShell } from "../components/HostedShell";
 import { Button, Card, Badge, Field, TextInput } from "../components/ui";
 import { useToast } from "../components/Toast";
-import { ApiError } from "../lib/http";
 
 export const Route = createFileRoute("/portal/$token")({
   component: PortalPage,
@@ -122,7 +121,6 @@ function PortalPage() {
   const price = sub.price;
   const plan = price?.plan;
   const isCanceled = sub.status === "canceled";
-  const brand = sub.customer?.name || "Customer";
   const initials = sub.customer?.name ? sub.customer.name.substring(0, 2).toUpperCase() : "CS";
 
   const handleUpdateCardSubmit = (e: React.FormEvent) => {
