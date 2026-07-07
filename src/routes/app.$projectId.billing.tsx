@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "../components/ui";
 import { StateMachine } from "../features/billing/StateMachine";
-import { Ledger } from "../features/billing/Ledger";
 
 export const Route = createFileRoute("/app/$projectId/billing")({
   component: BillingPage,
@@ -9,14 +8,13 @@ export const Route = createFileRoute("/app/$projectId/billing")({
 
 function BillingPage() {
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-3xl space-y-6">
       <PageHeader
         title="Billing engine"
-        subtitle="The two things you're judged on — state machine and ledger, kept apart."
+        subtitle="Core billing engine access states and recovery configurations."
       />
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div>
         <StateMachine />
-        <Ledger showRefund />
       </div>
     </div>
   );

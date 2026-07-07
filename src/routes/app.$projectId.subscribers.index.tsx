@@ -31,15 +31,18 @@ function SubscribersPage() {
   if (!current) {
     return (
       <div className="mx-auto max-w-4xl">
-        <PageHeader title="Subscribers" subtitle="Subscribers live under a project." />
+        <PageHeader
+          title="Subscribers"
+          subtitle="Subscribers live under a project."
+        />
         <Card className="mt-6 p-12 text-center">
           <div className="text-[14px] font-semibold">No project selected</div>
           <p className="mx-auto mt-1 max-w-xs text-[13px] text-ink-3">
-            Create or select a project first — customers, plans, and subscriptions all
-            belong to a project.
+            Create or select a project first — customers, plans, and
+            subscriptions all belong to a project.
           </p>
           <div className="mt-5">
-            <Button variant="primary" onClick={() => navigate({ to: "/app/projects/new" })}>
+            <Button variant="primary" onClick={() => navigate({ to: "/app" })}>
               + New project
             </Button>
           </div>
@@ -89,14 +92,16 @@ function SubscribersPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-line-2 bg-surface-2/40">
-                  {["Customer", "Plan", "Amount", "Status", "Renews/Ends"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
-                    >
-                      {h}
-                    </th>
-                  ))}
+                  {["Customer", "Plan", "Amount", "Status", "Renews/Ends"].map(
+                    (h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
+                      >
+                        {h}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -105,30 +110,44 @@ function SubscribersPage() {
                   const amount = s.price?.unit_amount ?? 0;
                   const planName = s.price?.plan?.name ?? "—";
                   const renews = s.current_period_end
-                    ? new Date(s.current_period_end).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })
+                    ? new Date(s.current_period_end).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        },
+                      )
                     : "—";
                   return (
                     <tr
                       key={s.id}
-                      onClick={() => navigate({ to: "/app/$projectId/subscribers/$id", params: { projectId: current!.id, id: s.id } })}
+                      onClick={() =>
+                        navigate({
+                          to: "/app/$projectId/subscribers/$id",
+                          params: { projectId: current!.id, id: s.id },
+                        })
+                      }
                       className="border-t border-line-2 first:border-t-0 hover:bg-surface-2 cursor-pointer transition-colors"
                     >
                       <td className="px-4 py-3.5">
                         <div className="text-[13px] font-semibold text-ink">
                           {s.customer?.name || "Anonymous"}
                         </div>
-                        <div className="text-[11px] text-ink-4">{s.customer?.email}</div>
+                        <div className="text-[11px] text-ink-4">
+                          {s.customer?.email}
+                        </div>
                       </td>
-                      <td className="px-4 py-3.5 text-[13px] text-ink-2">{planName}</td>
+                      <td className="px-4 py-3.5 text-[13px] text-ink-2">
+                        {planName}
+                      </td>
                       <td className="px-4 py-3.5 text-[13px] font-semibold tnum">
                         {formatNaira(amount)}
                       </td>
                       <td className="px-4 py-3.5">
-                        <Badge tone={meta?.tone ?? "gray"}>{meta?.label ?? s.status}</Badge>
+                        <Badge tone={meta?.tone ?? "gray"}>
+                          {meta?.label ?? s.status}
+                        </Badge>
                       </td>
                       <td className="px-4 py-3.5 text-right text-[13px] text-ink-2 tnum">
                         {renews}
@@ -139,55 +158,63 @@ function SubscribersPage() {
               </tbody>
             </table>
           ) : (
-            <div className="p-12 text-center text-ink-3 text-[13px]">No subscriptions found.</div>
+            <div className="p-12 text-center text-ink-3 text-[13px]">
+              No subscriptions found.
+            </div>
           )
-        ) : (
-          customers && customers.length > 0 ? (
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-line-2 bg-surface-2/40">
-                  {["Name", "Email", "Env", "Status", "Created At"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {customers.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="border-t border-line-2 first:border-t-0 hover:bg-surface-2 transition-colors"
+        ) : customers && customers.length > 0 ? (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-line-2 bg-surface-2/40">
+                {["Name", "Email", "Env", "Status", "Created At"].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
                   >
-                    <td className="px-4 py-3.5 text-[13px] font-semibold text-ink">{c.name}</td>
-                    <td className="px-4 py-3.5 text-[13px] text-ink-2">{c.email}</td>
-                    <td className="px-4 py-3.5">
-                      <Badge tone={c.environment === "live" ? "green" : "yellow"}>
-                        {c.environment}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <Badge tone={c.is_active ? "green" : "gray"}>
-                        {c.is_active ? "Active" : "Inactive"}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3.5 text-right text-[13px] text-ink-2 tnum">
-                      {c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      }) : "—"}
-                    </td>
-                  </tr>
+                    {h}
+                  </th>
                 ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="p-12 text-center text-ink-3 text-[13px]">No customers found.</div>
-          )
+              </tr>
+            </thead>
+            <tbody>
+              {customers.map((c) => (
+                <tr
+                  key={c.id}
+                  className="border-t border-line-2 first:border-t-0 hover:bg-surface-2 transition-colors"
+                >
+                  <td className="px-4 py-3.5 text-[13px] font-semibold text-ink">
+                    {c.name}
+                  </td>
+                  <td className="px-4 py-3.5 text-[13px] text-ink-2">
+                    {c.email}
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <Badge tone={c.environment === "live" ? "green" : "yellow"}>
+                      {c.environment}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <Badge tone={c.is_active ? "green" : "gray"}>
+                      {c.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3.5 text-right text-[13px] text-ink-2 tnum">
+                    {c.createdAt
+                      ? new Date(c.createdAt).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="p-12 text-center text-ink-3 text-[13px]">
+            No customers found.
+          </div>
         )}
       </Card>
     </div>

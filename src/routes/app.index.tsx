@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, PageHeader, Button, Field, TextInput } from "../components/ui";
-import { useProjects } from "../components/ProjectContext";
 import { projectsApi, type Project } from "../lib/api";
 import { ApiError } from "../lib/http";
 
@@ -22,7 +21,6 @@ function deriveInitials(name: string) {
 function Overview() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { current } = useProjects();
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -98,7 +96,7 @@ function Overview() {
                         {p.name}
                       </h3>
                       <div className="text-[9px] uppercase tracking-wider text-ink-4 mt-0.5">
-                        {p.environment} mode
+                        Active Workspace
                       </div>
                     </div>
                   </div>

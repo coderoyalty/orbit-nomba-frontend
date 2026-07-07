@@ -198,6 +198,24 @@ export function Sidebar({
                 </svg>
               }
             />
+            <a
+              href="/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13px] font-medium text-ink-2 transition-colors hover:bg-surface-3 select-none"
+            >
+              <span className="opacity-60">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={ico}>
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+              </span>
+              API Reference
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="ml-auto h-3 w-3 opacity-40">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+              </svg>
+            </a>
             <NavItem
               to="/app/$projectId/webhooks"
               params={{ projectId: current.id }}

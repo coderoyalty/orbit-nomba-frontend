@@ -34,16 +34,18 @@ This frontend is wired to the Orbit NestJS backend (`core-api`).
 
 A tenant **Account** owns **Projects**, and plans / API keys / customers /
 subscriptions all live under a project. The UI reflects this:
+
 - `ProjectProvider` + `useProjects` hold the selected project (persisted to
   `localStorage`).
 - The sidebar **project switcher** changes the active project; `/app/projects`
-  lists them and `/app/projects/new` creates one.
+  lists them and `/app` creates one.
 - Plans and API keys are scoped to the selected project. With no project, those
   screens prompt you to create one.
 
 ### Wired vs mocked
 
 Wired to the backend now:
+
 - `POST /dashboard/auth/register`, `POST /dashboard/auth/login`,
   `POST /dashboard/auth/logout`, `GET /dashboard/auth/me`
 - `GET|POST /dashboard/projects`, `DELETE /dashboard/projects/:id`,
@@ -66,8 +68,8 @@ app.enableCors({ origin: "http://localhost:5173", credentials: true });
 ## Layers
 
 - **Layer 1 (tenant dashboard, `/app`, cookie-auth):** overview, projects, plans
-  + Plan Builder, subscribers + detail with manual refund, billing engine
-  (state machine + ledger), dunning, invoices, API keys, webhooks, payouts.
+  - Plan Builder, subscribers + detail with manual refund, billing engine
+    (state machine + ledger), dunning, invoices, API keys, webhooks, payouts.
 - **Layer 2 (end-user, public, token-based, tenant-branded):**
   `/checkout/$session`, `/portal` (magic-link gate), `/portal/$token`,
   `/recover/$token`.

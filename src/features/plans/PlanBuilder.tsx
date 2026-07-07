@@ -33,6 +33,7 @@ export function PlanBuilder({
   const [customCount, setCustomCount] = useState("1");
   const [customUnit, setCustomUnit] = useState<"day" | "week" | "month" | "year">("month");
   const [trialDays, setTrialDays] = useState("");
+  const [dunningEnabled, setDunningEnabled] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const create = useMutation({
@@ -90,6 +91,7 @@ export function PlanBuilder({
       name: name.trim(),
       description: description.trim(),
       trial_days: tDays,
+      dunning_enabled: dunningEnabled,
       price: {
         interval,
         interval_count,
@@ -190,6 +192,22 @@ export function PlanBuilder({
             </div>
           </div>
         )}
+
+        <div className="flex items-start gap-3 rounded-[10px] border border-line bg-surface p-4">
+          <input
+            type="checkbox"
+            id="dunning-enabled"
+            checked={dunningEnabled}
+            onChange={(e) => setDunningEnabled(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-line text-yellow focus:ring-yellow cursor-pointer"
+          />
+          <label htmlFor="dunning-enabled" className="cursor-pointer select-none">
+            <span className="block text-[13px] font-bold text-ink">Enable payment retries (Dunning)</span>
+            <span className="block text-[11.5px] text-ink-3 mt-0.5 leading-relaxed">
+              If a renewal payment fails, Orbit will automatically retry card charges over a graceful period instead of canceling immediately.
+            </span>
+          </label>
+        </div>
 
         {create.isError && (
           <p className="rounded-[10px] bg-red-bg px-3.5 py-2.5 text-[12px] font-medium text-red">

@@ -14,10 +14,13 @@ function ApiKeysPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { current } = useProjects();
-  const [confirmingRotation, setConfirmingRotation] = useState<"live" | "test" | null>(null);
+  const [confirmingRotation, setConfirmingRotation] = useState<
+    "live" | "test" | null
+  >(null);
 
   const gen = useMutation({
-    mutationFn: (env: "live" | "test") => projectsApi.generateKeys(current!.id, env),
+    mutationFn: (env: "live" | "test") =>
+      projectsApi.generateKeys(current!.id, env),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       setConfirmingRotation(null);
@@ -31,7 +34,7 @@ function ApiKeysPage() {
         <Card className="mt-6 p-12 text-center">
           <div className="text-[14px] font-semibold">No project selected</div>
           <div className="mt-5">
-            <Button variant="primary" onClick={() => navigate({ to: "/app/projects/new" })}>
+            <Button variant="primary" onClick={() => navigate({ to: "/app" })}>
               + New project
             </Button>
           </div>
@@ -62,12 +65,14 @@ function ApiKeysPage() {
               <strong className="text-ink">
                 {confirmingRotation === "live" ? "Live Mode" : "Test Mode"}
               </strong>{" "}
-              API key? This will immediately revoke the current key, and any backend
-              services using it will fail to authenticate until updated.
+              API key? This will immediately revoke the current key, and any
+              backend services using it will fail to authenticate until updated.
             </p>
             {gen.isError && (
               <p className="mt-3 rounded-[10px] bg-red-bg px-3.5 py-2.5 text-[11px] font-semibold text-red">
-                {gen.error instanceof ApiError ? gen.error.message : "Failed to rotate key."}
+                {gen.error instanceof ApiError
+                  ? gen.error.message
+                  : "Failed to rotate key."}
               </p>
             )}
             <div className="mt-5 flex justify-end gap-2.5">
@@ -115,7 +120,10 @@ function ApiKeysPage() {
           <div className="space-y-4">
             <CopyField
               label="Secret key"
-              value={testKeyObj.secret_key ?? `${testKeyObj.key_prefix}_••••••••••••••••••••••••`}
+              value={
+                testKeyObj.secret_key ??
+                `${testKeyObj.key_prefix}_••••••••••••••••••••••••`
+              }
             />
             <div className="flex justify-end pt-1">
               <Button
@@ -129,11 +137,14 @@ function ApiKeysPage() {
         ) : (
           <div className="space-y-3">
             <p className="text-[13px] text-ink-3">
-              Generate a Test API key to authenticate integration tests in Test Mode.
+              Generate a Test API key to authenticate integration tests in Test
+              Mode.
             </p>
             {gen.isError && gen.variables === "test" && (
               <p className="rounded-[10px] bg-red-bg px-3.5 py-2.5 text-[12px] font-semibold text-red">
-                {gen.error instanceof ApiError ? gen.error.message : "Could not generate test key."}
+                {gen.error instanceof ApiError
+                  ? gen.error.message
+                  : "Could not generate test key."}
               </p>
             )}
             <Button
@@ -141,7 +152,9 @@ function ApiKeysPage() {
               disabled={gen.isPending && gen.variables === "test"}
               onClick={() => gen.mutate("test")}
             >
-              {gen.isPending && gen.variables === "test" ? "Generating…" : "Generate Test Key"}
+              {gen.isPending && gen.variables === "test"
+                ? "Generating…"
+                : "Generate Test Key"}
             </Button>
           </div>
         )}
@@ -170,7 +183,10 @@ function ApiKeysPage() {
           <div className="space-y-4">
             <CopyField
               label="Secret key"
-              value={liveKeyObj.secret_key ?? `${liveKeyObj.key_prefix}_••••••••••••••••••••••••`}
+              value={
+                liveKeyObj.secret_key ??
+                `${liveKeyObj.key_prefix}_••••••••••••••••••••••••`
+              }
             />
             <div className="flex justify-end pt-1">
               <Button
@@ -184,11 +200,14 @@ function ApiKeysPage() {
         ) : (
           <div className="space-y-3">
             <p className="text-[13px] text-ink-3">
-              Generate a Live API key to authenticate production requests in Live Mode.
+              Generate a Live API key to authenticate production requests in
+              Live Mode.
             </p>
             {gen.isError && gen.variables === "live" && (
               <p className="rounded-[10px] bg-red-bg px-3.5 py-2.5 text-[12px] font-semibold text-red">
-                {gen.error instanceof ApiError ? gen.error.message : "Could not generate live key."}
+                {gen.error instanceof ApiError
+                  ? gen.error.message
+                  : "Could not generate live key."}
               </p>
             )}
             <Button
@@ -196,35 +215,12 @@ function ApiKeysPage() {
               disabled={gen.isPending && gen.variables === "live"}
               onClick={() => gen.mutate("live")}
             >
-              {gen.isPending && gen.variables === "live" ? "Generating…" : "Generate Live Key"}
+              {gen.isPending && gen.variables === "live"
+                ? "Generating…"
+                : "Generate Live Key"}
             </Button>
           </div>
         )}
-      </Card>
-
-      {/* Code Snippet Card */}
-      <Card className="p-6">
-        <h2 className="mb-1 text-[14px] font-bold">Create a checkout link</h2>
-        <p className="mb-4 text-[13px] text-ink-3">
-          Hit this API endpoint from your application backend to launch a hosted checkout session.
-        </p>
-        <pre className="overflow-x-auto rounded-[12px] bg-ink px-4 py-3.5 font-mono text-[11.5px] leading-[1.7] text-[#D4D4D4]">
-          <span style={{ color: "#6B6B6B" }}>{"// create a checkout session"}</span>
-          {"\n"}
-          <span style={{ color: "#FFC105" }}>POST</span>{" "}
-          <span style={{ color: "#8FBEFF" }}>/v1/checkout_sessions</span>
-          {"\n"}
-          {"{ "}
-          <span style={{ color: "#9BE3B4" }}>"plan"</span>
-          {": "}
-          <span style={{ color: "#9BE3B4" }}>"plan_xxx"</span>
-          {",\n"}
-          {"  "}
-          <span style={{ color: "#9BE3B4" }}>"customer"</span>
-          {": "}
-          <span style={{ color: "#9BE3B4" }}>"cus_xxx"</span>
-          {" }"}
-        </pre>
       </Card>
     </div>
   );

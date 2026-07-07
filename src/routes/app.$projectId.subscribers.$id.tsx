@@ -1,15 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { subscribersApi, formatNaira, STATE_META } from "../lib/api";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { subscribersApi, portalApi, formatNaira, STATE_META } from "../lib/api";
 import { PageHeader, Card, Badge, Button } from "../components/ui";
-import { Ledger } from "../features/billing/Ledger";
 import { useProjects } from "../components/ProjectContext";
+import { useToast } from "../components/Toast";
 
 export const Route = createFileRoute("/app/$projectId/subscribers/$id")({
   component: SubscriberDetail,
 });
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between py-3 border-b border-line last:border-b-0">
       <span className="text-[12px] text-ink-3">{label}</span>
@@ -32,6 +38,7 @@ function formatDate(dateStr?: string | null) {
 function SubscriberDetail() {
   const { projectId, id } = Route.useParams();
   const { current } = useProjects();
+  const toast = useToast();
 
   const { data: subscriptions, isLoading } = useQuery({
     queryKey: ["subscriptions", current?.id],
@@ -39,11 +46,26 @@ function SubscriberDetail() {
     enabled: !!current,
   });
 
+  const generatePortal = useMutation({
+    mutationFn: () => portalApi.createSession(id),
+    onSuccess: (data) => {
+      toast("Portal session token generated!", "success");
+      window.open(`/portal/${data.token}`, "_blank");
+    },
+    onError: (err: any) => {
+      toast(err?.message || "Failed to generate portal session", "error");
+    },
+  });
+
   if (!current) {
     return (
       <div className="mx-auto max-w-5xl">
         <p className="text-[14px] text-ink-3">No active project selected.</p>
-        <Link to="/app/$projectId/subscribers" params={{ projectId }} className="text-[13px] font-semibold text-yellow-deep">
+        <Link
+          to="/app/$projectId/subscribers"
+          params={{ projectId }}
+          className="text-[13px] font-semibold text-yellow-deep"
+        >
           ← Back to subscribers
         </Link>
       </div>
@@ -68,9 +90,12 @@ function SubscriberDetail() {
             ⚠️
           </div>
           <div className="space-y-1.5">
-            <h2 className="text-[16px] font-bold text-ink tracking-tight">Subscription not found</h2>
+            <h2 className="text-[16px] font-bold text-ink tracking-tight">
+              Subscription not found
+            </h2>
             <p className="max-w-sm mx-auto text-[12.5px] text-ink-3 leading-relaxed">
-              We couldn't locate any subscription matching this identifier. It might have been deleted, or it belongs to a different environment.
+              We couldn't locate any subscription matching this identifier. It
+              might have been deleted, or it belongs to a different environment.
             </p>
           </div>
           <div className="pt-2 w-full">
@@ -104,11 +129,13 @@ function SubscriberDetail() {
       break;
     case "past_due":
       bannerColor = "bg-amber-bg border-amber-line text-amber";
-      bannerText = "A payment attempt failed. We are currently retrying billing according to the project's dunning schedule.";
+      bannerText =
+        "A payment attempt failed. We are currently retrying billing according to the project's dunning schedule.";
       break;
     case "unpaid":
       bannerColor = "bg-red-bg border-red-line text-red";
-      bannerText = "This subscription has failed all retry attempts and is unpaid. Service access should be suspended.";
+      bannerText =
+        "This subscription has failed all retry attempts and is unpaid. Service access should be suspended.";
       break;
     case "canceled":
       bannerColor = "bg-surface-3 border-line text-ink-3";
@@ -116,7 +143,8 @@ function SubscriberDetail() {
       break;
     case "incomplete":
       bannerColor = "bg-cream border-yellow text-yellow-deep";
-      bannerText = "Subscription setup has been initiated but the customer card has not yet been authorized. Awaiting checkout completion.";
+      bannerText =
+        "Subscription setup has been initiated but the customer card has not yet been authorized. Awaiting checkout completion.";
       break;
   }
 
@@ -124,9 +152,10 @@ function SubscriberDetail() {
   let customerMeta: Record<string, any> = {};
   if (sub.customer?.metadata) {
     try {
-      customerMeta = typeof sub.customer.metadata === "string" 
-        ? JSON.parse(sub.customer.metadata) 
-        : sub.customer.metadata;
+      customerMeta =
+        typeof sub.customer.metadata === "string"
+          ? JSON.parse(sub.customer.metadata)
+          : sub.customer.metadata;
     } catch (err) {
       customerMeta = { raw: sub.customer.metadata };
     }
@@ -146,13 +175,43 @@ function SubscriberDetail() {
           <PageHeader
             title={sub.customer?.name || "Anonymous Customer"}
             subtitle={sub.customer?.email || ""}
-            action={<Badge tone={meta?.tone ?? "gray"}>{meta?.label ?? sub.status}</Badge>}
+            action={
+              <div className="flex items-center gap-2.5">
+                <Badge tone={meta?.tone ?? "gray"}>
+                  {meta?.label ?? sub.status}
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generatePortal.mutate()}
+                  disabled={generatePortal.isPending}
+                  className="flex items-center gap-1.5"
+                >
+                  <span>
+                    {generatePortal.isPending
+                      ? "Generating..."
+                      : "Customer Portal"}
+                  </span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="h-3.5 w-3.5 text-ink-3"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                  </svg>
+                </Button>
+              </div>
+            }
           />
         </div>
       </div>
 
       {/* Status banner description */}
-      <div className={`rounded-[12px] border px-4 py-3.5 text-[13px] leading-relaxed font-medium ${bannerColor}`}>
+      <div
+        className={`rounded-[12px] border px-4 py-3.5 text-[13px] leading-relaxed font-medium ${bannerColor}`}
+      >
         {bannerText}
       </div>
 
@@ -160,15 +219,19 @@ function SubscriberDetail() {
         <div className="space-y-6">
           {/* Subscription configuration details */}
           <Card className="p-5">
-            <h3 className="text-[13px] font-bold text-ink mb-1">Subscription Details</h3>
-            <p className="text-[11.5px] text-ink-3 mb-3">Core subscription identifiers and product tiering.</p>
+            <h3 className="text-[13px] font-bold text-ink mb-1">
+              Subscription Details
+            </h3>
+            <p className="text-[11.5px] text-ink-3 mb-3">
+              Core subscription identifiers and product tiering.
+            </p>
             <div className="divide-y divide-line-2">
               <Row label="Plan">
-                {sub.price?.plan_id ? (
+                {sub.price?.plan?.id ? (
                   <Link
                     to="/app/$projectId/plans"
                     params={{ projectId }}
-                    search={{ planId: sub.price.plan_id }}
+                    search={{ planId: sub.price.plan.id }}
                     className="text-yellow-deep hover:underline font-semibold"
                   >
                     {planName}
@@ -181,7 +244,9 @@ function SubscriberDetail() {
                 <span className="tnum">{formatNaira(amount)}</span>
               </Row>
               <Row label="Subscription ID">
-                <span className="font-mono text-[12px] text-ink-3 select-all">{sub.id}</span>
+                <span className="font-mono text-[12px] text-ink-3 select-all">
+                  {sub.id}
+                </span>
               </Row>
               <Row label="Environment">
                 <Badge tone={sub.environment === "live" ? "green" : "yellow"}>
@@ -193,8 +258,12 @@ function SubscriberDetail() {
 
           {/* Lifecycle dates timeline */}
           <Card className="p-5">
-            <h3 className="text-[13px] font-bold text-ink mb-1">Lifecycle Timestamps</h3>
-            <p className="text-[11.5px] text-ink-3 mb-3">Timeline of periods, trials, and subscription actions.</p>
+            <h3 className="text-[13px] font-bold text-ink mb-1">
+              Lifecycle Timestamps
+            </h3>
+            <p className="text-[11.5px] text-ink-3 mb-3">
+              Timeline of periods, trials, and subscription actions.
+            </p>
             <div className="divide-y divide-line-2">
               <Row label="Created at">{formatDate(sub.createdAt)}</Row>
               {sub.trial_start && (
@@ -204,10 +273,14 @@ function SubscriberDetail() {
                 <Row label="Trial ending">{formatDate(sub.trial_end)}</Row>
               )}
               {sub.current_period_start && (
-                <Row label="Current period start">{formatDate(sub.current_period_start)}</Row>
+                <Row label="Current period start">
+                  {formatDate(sub.current_period_start)}
+                </Row>
               )}
               {sub.current_period_end && (
-                <Row label="Current period end">{formatDate(sub.current_period_end)}</Row>
+                <Row label="Current period end">
+                  {formatDate(sub.current_period_end)}
+                </Row>
               )}
               {sub.canceled_at && (
                 <Row label="Canceled at">{formatDate(sub.canceled_at)}</Row>
@@ -220,18 +293,26 @@ function SubscriberDetail() {
 
           {/* Subscribed Customer Profile & metadata */}
           <Card className="p-5">
-            <h3 className="text-[13px] font-bold text-ink mb-1">Customer Profile</h3>
-            <p className="text-[11.5px] text-ink-3 mb-3">Customer reference details and custom integration metadata.</p>
+            <h3 className="text-[13px] font-bold text-ink mb-1">
+              Customer Profile
+            </h3>
+            <p className="text-[11.5px] text-ink-3 mb-3">
+              Customer reference details and custom integration metadata.
+            </p>
             <div className="divide-y divide-line-2">
               <Row label="Name">{sub.customer?.name || "—"}</Row>
               <Row label="Email">{sub.customer?.email || "—"}</Row>
               <Row label="Customer ID">
-                <span className="font-mono text-[12px] text-ink-3 select-all">{sub.customer_id}</span>
+                <span className="font-mono text-[12px] text-ink-3 select-all">
+                  {sub.customer_id}
+                </span>
               </Row>
             </div>
             {Object.keys(customerMeta).length > 0 && (
               <div className="mt-4">
-                <span className="text-[11.5px] font-bold text-ink-3">Custom Metadata</span>
+                <span className="text-[11.5px] font-bold text-ink-3">
+                  Custom Metadata
+                </span>
                 <pre className="mt-2 overflow-x-auto rounded-[10px] border border-line bg-surface-2 p-3.5 font-mono text-[11.5px] text-ink-2 select-all leading-normal">
                   {JSON.stringify(customerMeta, null, 2)}
                 </pre>
@@ -241,8 +322,12 @@ function SubscriberDetail() {
 
           {/* Payment Method details */}
           <Card className="p-5">
-            <h3 className="text-[13px] font-bold text-ink mb-1">Payment Method</h3>
-            <p className="text-[11.5px] text-ink-3 mb-3">Authorized card token for automatic billing renewals.</p>
+            <h3 className="text-[13px] font-bold text-ink mb-1">
+              Payment Method
+            </h3>
+            <p className="text-[11.5px] text-ink-3 mb-3">
+              Authorized card token for automatic billing renewals.
+            </p>
             {sub.paymentMethod ? (
               <div className="mt-4 relative overflow-hidden rounded-[16px] bg-gradient-to-br from-ink to-[#2b2b2b] p-6 text-white shadow-lg border border-line-2 min-h-[170px] flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300">
                 {/* Background glow effects */}
@@ -256,7 +341,7 @@ function SubscriberDetail() {
                     <div className="flex justify-between w-full h-[1px] bg-yellow/20" />
                     <div className="flex justify-between w-full h-[1px] bg-yellow/20" />
                   </div>
-                  
+
                   {/* Card Brand */}
                   <div className="text-[12px] font-black tracking-widest text-white/95 bg-white/10 px-2.5 py-1 rounded-[6px] uppercase border border-white/10 select-none">
                     {sub.paymentMethod.brand}
@@ -270,18 +355,25 @@ function SubscriberDetail() {
 
                 <div className="flex justify-between items-end">
                   <div>
-                    <div className="text-[9px] uppercase tracking-wider text-white/40 font-semibold">Card Holder</div>
+                    <div className="text-[9px] uppercase tracking-wider text-white/40 font-semibold">
+                      Card Holder
+                    </div>
                     <div className="text-[12px] font-bold text-white/95 mt-0.5 max-w-[160px] truncate">
                       {sub.customer?.name || "Cardholder"}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[9px] uppercase tracking-wider text-white/40 font-semibold">Added</div>
+                    <div className="text-[9px] uppercase tracking-wider text-white/40 font-semibold">
+                      Added
+                    </div>
                     <div className="text-[11.5px] font-bold text-white/90 mt-0.5">
-                      {new Date(sub.paymentMethod.createdAt).toLocaleDateString("en-GB", {
-                        month: "2-digit",
-                        year: "2-digit",
-                      })}
+                      {new Date(sub.paymentMethod.createdAt).toLocaleDateString(
+                        "en-GB",
+                        {
+                          month: "2-digit",
+                          year: "2-digit",
+                        },
+                      )}
                     </div>
                   </div>
                 </div>
@@ -294,11 +386,115 @@ function SubscriberDetail() {
           </Card>
         </div>
 
-        {/* Ledger panel */}
+        {/* Real Invoice Ledger */}
         <div>
-          <Ledger showRefund />
+          <SubscriberLedger invoices={sub.invoices || []} />
         </div>
       </div>
     </div>
+  );
+}
+
+function SubscriberLedger({ invoices }: { invoices: any[] }) {
+  const attempts = invoices.flatMap((inv) =>
+    (inv.paymentAttempts || []).map((att: any) => ({
+      ...att,
+      invoiceAmount: inv.amount,
+      invoiceId: inv.id,
+    })),
+  );
+
+  const sortedAttempts = [...attempts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  if (sortedAttempts.length === 0) {
+    return (
+      <Card className="p-5">
+        <h3 className="text-[13px] font-bold text-ink mb-1">
+          Payment Attempts
+        </h3>
+        <p className="text-[11.5px] text-ink-3 mb-3">
+          Logs of all card charge executions.
+        </p>
+        <div className="text-center py-8 text-[12.5px] text-ink-4 font-medium border border-dashed border-line rounded-[10px] bg-surface-2">
+          No payment attempts recorded.
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="p-5">
+      <h3 className="text-[13px] font-bold text-ink mb-1">Payment Attempts</h3>
+      <p className="text-[11.5px] text-ink-3 mb-3">
+        Logs of card charge transactions, sorted by execution time.
+      </p>
+
+      <table className="w-full border-collapse mt-4">
+        <thead>
+          <tr className="border-b border-line-2">
+            {["Attempt ID / Date", "Status", "Amount"].map((h) => (
+              <th
+                key={h}
+                className="pb-2 text-left text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-3 last:text-right"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line-2">
+          {sortedAttempts.map((att) => {
+            const dateStr = new Date(att.createdAt).toLocaleDateString(
+              "en-GB",
+              {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              },
+            );
+
+            const statusMeta = {
+              successful: { tone: "success" as const, label: "Success" },
+              failed: { tone: "red" as const, label: "Failed" },
+              pending: { tone: "amber" as const, label: "Pending" },
+            }[att.status as string] || {
+              tone: "gray" as const,
+              label: att.status,
+            };
+
+            return (
+              <tr key={att.id} className="align-middle">
+                <td className="py-2.5">
+                  <div
+                    className="font-mono text-[12px] font-semibold text-ink truncate max-w-[125px]"
+                    title={att.id}
+                  >
+                    {att.provider_reference || att.id}
+                  </div>
+                  <div className="text-[10px] text-ink-4 mt-0.5">{dateStr}</div>
+                </td>
+                <td className="py-2.5">
+                  <Badge tone={statusMeta.tone as any}>
+                    {statusMeta.label}
+                  </Badge>
+                  {att.error_message && (
+                    <div className="text-[9.5px] text-red mt-0.5 max-w-[130px] leading-tight font-medium">
+                      {att.error_message}
+                    </div>
+                  )}
+                </td>
+                <td className="py-2.5 text-right tnum text-[13px] font-semibold text-ink">
+                  {formatNaira(att.invoiceAmount)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </Card>
   );
 }

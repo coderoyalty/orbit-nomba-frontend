@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, PageHeader, Button } from "../components/ui";
+import { Card, PageHeader } from "../components/ui";
 import { useProjects } from "../components/ProjectContext";
 import { subscribersApi, formatNaira } from "../lib/api";
 

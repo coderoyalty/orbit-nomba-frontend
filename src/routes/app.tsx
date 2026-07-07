@@ -58,7 +58,7 @@ function AppLayout() {
 
   // Extract projectId from active route parameters
   const projectMatch = matches.find((m) => m.params && "projectId" in m.params);
-  const projectId = projectMatch?.params?.projectId;
+  const projectId = (projectMatch?.params as any)?.projectId;
 
   // Synchronize context selected project with active URL param
   useEffect(() => {
