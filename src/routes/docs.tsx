@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { PageHeader, Card, Badge, Button } from "../components/ui";
+import { Card, Badge } from "../components/ui";
 
 export const Route = createFileRoute("/docs")({
   component: PublicApiDocsPage,
@@ -25,9 +24,15 @@ const SPEC: Endpoint[] = [
     method: "POST",
     path: "/v1/subscriptions",
     summary: "Initialize Subscription",
-    description: "Creates a new customer record and generates an incomplete subscription linked to a pricing plan. Returns a checkout URL to authorize the customer's card.",
+    description:
+      "Creates a new customer record and generates an incomplete subscription linked to a pricing plan. Returns a checkout URL to authorize the customer's card.",
     headers: [
-      { name: "Authorization", type: "string", required: true, desc: "Bearer <your_secret_api_key>" },
+      {
+        name: "Authorization",
+        type: "string",
+        required: true,
+        desc: "Bearer <your_secret_api_key>",
+      },
     ],
     requestBody: `{
   "customer": {
@@ -54,12 +59,23 @@ const SPEC: Endpoint[] = [
     method: "GET",
     path: "/v1/subscriptions/:id",
     summary: "Retrieve Subscription",
-    description: "Retrieves the active state and attributes of a specific subscription from the database, including pricing and metadata.",
+    description:
+      "Retrieves the active state and attributes of a specific subscription from the database, including pricing and metadata.",
     headers: [
-      { name: "Authorization", type: "string", required: true, desc: "Bearer <your_secret_api_key>" },
+      {
+        name: "Authorization",
+        type: "string",
+        required: true,
+        desc: "Bearer <your_secret_api_key>",
+      },
     ],
     params: [
-      { name: "id", type: "string", required: true, desc: "The unique subscription ID" },
+      {
+        name: "id",
+        type: "string",
+        required: true,
+        desc: "The unique subscription ID",
+      },
     ],
     responseBody: `{
   "success": true,
@@ -81,9 +97,15 @@ const SPEC: Endpoint[] = [
     method: "POST",
     path: "/v1/portal/sessions",
     summary: "Create Portal Session",
-    description: "Generates a secure, tokenized JWT billing session key programmatically for downstream customer self-service portals.",
+    description:
+      "Generates a secure, tokenized JWT billing session key programmatically for downstream customer self-service portals.",
     headers: [
-      { name: "Authorization", type: "string", required: true, desc: "Bearer <your_secret_api_key>" },
+      {
+        name: "Authorization",
+        type: "string",
+        required: true,
+        desc: "Bearer <your_secret_api_key>",
+      },
     ],
     requestBody: `{
   "subscriptionId": "sub_8xY2b..."
@@ -101,9 +123,15 @@ const SPEC: Endpoint[] = [
     method: "GET",
     path: "/v1/portal/session",
     summary: "Load Portal Session",
-    description: "Decodes the JWT token transmitted in headers to load matching subscriber records securely.",
+    description:
+      "Decodes the JWT token transmitted in headers to load matching subscriber records securely.",
     headers: [
-      { name: "Authorization", type: "string", required: true, desc: "Bearer <JWT_Portal_Token>" },
+      {
+        name: "Authorization",
+        type: "string",
+        required: true,
+        desc: "Bearer <JWT_Portal_Token>",
+      },
     ],
     responseBody: `{
   "success": true,
@@ -121,9 +149,15 @@ const SPEC: Endpoint[] = [
     method: "POST",
     path: "/v1/portal/subscription/change-plan",
     summary: "Change Subscription Plan",
-    description: "Upgrades or downgrades subscription pricing tier using card tokens, capturing proration invoices instantly.",
+    description:
+      "Upgrades or downgrades subscription pricing tier using card tokens, capturing proration invoices instantly.",
     headers: [
-      { name: "Authorization", type: "string", required: true, desc: "Bearer <JWT_Portal_Token>" },
+      {
+        name: "Authorization",
+        type: "string",
+        required: true,
+        desc: "Bearer <JWT_Portal_Token>",
+      },
     ],
     requestBody: `{
   "planId": "plan_7aX8"
@@ -143,9 +177,15 @@ const SPEC: Endpoint[] = [
     method: "POST",
     path: "/v1/portal/subscription/cancel",
     summary: "Cancel Subscription",
-    description: "Cancels the subscription immediately and fires a subscription.canceled webhook event.",
+    description:
+      "Cancels the subscription immediately and fires a subscription.canceled webhook event.",
     headers: [
-      { name: "Authorization", type: "string", required: true, desc: "Bearer <JWT_Portal_Token>" },
+      {
+        name: "Authorization",
+        type: "string",
+        required: true,
+        desc: "Bearer <JWT_Portal_Token>",
+      },
     ],
     responseBody: `{
   "success": true,
@@ -173,8 +213,12 @@ function PublicApiDocsPage() {
   const generateSnippet = (e: Endpoint, l: Lang) => {
     const bearer = e.path.includes("/portal/") ? "PORTAL_JWT_TOKEN" : apiKey;
     const bodyStr = e.requestBody ? `\n  -d '${e.requestBody}'` : "";
-    const fetchBodyStr = e.requestBody ? `,\n  body: JSON.stringify(${e.requestBody.replace(/\n/g, "\n  ")})` : "";
-    const axiosBodyStr = e.requestBody ? `,\n  ${e.requestBody.replace(/\n/g, "\n  ")}` : "";
+    const fetchBodyStr = e.requestBody
+      ? `,\n  body: JSON.stringify(${e.requestBody.replace(/\n/g, "\n  ")})`
+      : "";
+    const axiosBodyStr = e.requestBody
+      ? `,\n  ${e.requestBody.replace(/\n/g, "\n  ")}`
+      : "";
 
     if (l === "curl") {
       return `curl -X ${e.method} "${apiUrl}${e.path}" \\
@@ -213,8 +257,12 @@ axios({
           <span className="grid h-[28px] w-[28px] place-items-center rounded-full bg-violet-bg text-[12.5px] font-bold text-violet">
             OB
           </span>
-          <span className="text-[15px] font-bold text-ink tracking-tight">Orbit API Reference</span>
-          <span className="text-[10px] font-semibold text-ink-3 border border-line bg-surface-3 px-1.5 py-0.5 rounded-[4px]">v1.0</span>
+          <span className="text-[15px] font-bold text-ink tracking-tight">
+            Orbit API Reference
+          </span>
+          <span className="text-[10px] font-semibold text-ink-3 border border-line bg-surface-3 px-1.5 py-0.5 rounded-[4px]">
+            v1.0
+          </span>
         </div>
         <div className="flex items-center gap-3">
           <a
@@ -230,14 +278,19 @@ axios({
       <main className="w-full max-w-7xl mx-auto px-6 py-10 space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-line pb-6">
           <div>
-            <h1 className="text-[26px] font-extrabold tracking-tight text-ink">API Reference</h1>
+            <h1 className="text-[26px] font-extrabold tracking-tight text-ink">
+              API Reference
+            </h1>
             <p className="text-[13px] text-ink-3 mt-1.5">
-              Explore available API resources and test request structures in real-time.
+              Explore available API resources and test request structures in
+              real-time.
             </p>
           </div>
           {/* Key Injector */}
           <div className="flex items-center gap-2 bg-surface border border-line rounded-[10px] px-3.5 py-2 shadow-sm max-w-xs w-full">
-            <span className="text-[11.5px] font-semibold text-ink-3 whitespace-nowrap">API Key:</span>
+            <span className="text-[11.5px] font-semibold text-ink-3 whitespace-nowrap">
+              API Key:
+            </span>
             <input
               type="text"
               value={apiKey}
@@ -288,14 +341,20 @@ axios({
             <Card className="p-6 space-y-6">
               <div>
                 <div className="flex items-center gap-2">
-                  <Badge tone={active.method === "POST" ? "info" : "success"}>
+                  <Badge
+                    tone={
+                      active.method === "POST" ? "info" : ("success" as any)
+                    }
+                  >
                     {active.method}
                   </Badge>
                   <code className="text-[13px] font-bold text-ink bg-surface-3 px-2.5 py-1 rounded-[6px]">
                     {active.path}
                   </code>
                 </div>
-                <h2 className="text-[18px] font-bold text-ink mt-4">{active.summary}</h2>
+                <h2 className="text-[18px] font-bold text-ink mt-4">
+                  {active.summary}
+                </h2>
                 <p className="text-[13px] leading-relaxed text-ink-3 mt-2">
                   {active.description}
                 </p>
@@ -309,11 +368,22 @@ axios({
                   </h3>
                   <div className="divide-y divide-line-2">
                     {active.headers.map((h) => (
-                      <div key={h.name} className="py-2.5 flex justify-between items-start text-[12.5px]">
+                      <div
+                        key={h.name}
+                        className="py-2.5 flex justify-between items-start text-[12.5px]"
+                      >
                         <div>
-                          <span className="font-semibold text-ink">{h.name}</span>
-                          {h.required && <span className="text-[10px] text-red ml-1 font-bold">required</span>}
-                          <p className="text-[12px] text-ink-4 mt-0.5">{h.desc}</p>
+                          <span className="font-semibold text-ink">
+                            {h.name}
+                          </span>
+                          {h.required && (
+                            <span className="text-[10px] text-red ml-1 font-bold">
+                              required
+                            </span>
+                          )}
+                          <p className="text-[12px] text-ink-4 mt-0.5">
+                            {h.desc}
+                          </p>
                         </div>
                         <span className="text-[11.5px] text-ink-3 bg-surface-2 px-2 py-0.5 rounded-[4px] border border-line">
                           {h.type}
@@ -332,11 +402,22 @@ axios({
                   </h3>
                   <div className="divide-y divide-line-2">
                     {active.params.map((p) => (
-                      <div key={p.name} className="py-2.5 flex justify-between items-start text-[12.5px]">
+                      <div
+                        key={p.name}
+                        className="py-2.5 flex justify-between items-start text-[12.5px]"
+                      >
                         <div>
-                          <span className="font-semibold text-ink">{p.name}</span>
-                          {p.required && <span className="text-[10px] text-red ml-1 font-bold">required</span>}
-                          <p className="text-[12px] text-ink-4 mt-0.5">{p.desc}</p>
+                          <span className="font-semibold text-ink">
+                            {p.name}
+                          </span>
+                          {p.required && (
+                            <span className="text-[10px] text-red ml-1 font-bold">
+                              required
+                            </span>
+                          )}
+                          <p className="text-[12px] text-ink-4 mt-0.5">
+                            {p.desc}
+                          </p>
                         </div>
                         <span className="text-[11.5px] text-ink-3 bg-surface-2 px-2 py-0.5 rounded-[4px] border border-line">
                           {p.type}
