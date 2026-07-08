@@ -252,22 +252,22 @@ axios({
   return (
     <div className="min-h-screen bg-canvas">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-line-2 bg-surface px-6 py-4 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <span className="grid h-[28px] w-[28px] place-items-center rounded-full bg-violet-bg text-[12.5px] font-bold text-violet">
+      <header className="sticky top-0 z-45 w-full border-b border-line-2 bg-surface px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between shadow-sm">
+        <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
+          <span className="grid h-[28px] w-[28px] place-items-center rounded-full bg-violet-bg text-[12.5px] font-bold text-violet shrink-0">
             OB
           </span>
-          <span className="text-[15px] font-bold text-ink tracking-tight">
+          <span className="text-[14px] sm:text-[15px] font-bold text-ink tracking-tight whitespace-nowrap">
             Orbit API Reference
           </span>
-          <span className="text-[10px] font-semibold text-ink-3 border border-line bg-surface-3 px-1.5 py-0.5 rounded-[4px]">
+          <span className="text-[10px] font-semibold text-ink-3 border border-line bg-surface-3 px-1.5 py-0.5 rounded-[4px] shrink-0">
             v1.0
           </span>
         </div>
         <div className="flex items-center gap-3">
           <a
             href="/app"
-            className="text-[12.5px] font-semibold text-ink-2 hover:text-ink transition-colors px-3.5 py-1.5 rounded-[8px] border border-line hover:bg-surface-3"
+            className="text-[12.5px] font-semibold text-ink-2 hover:text-ink transition-colors px-3.5 py-1.5 rounded-[8px] border border-line hover:bg-surface-3 whitespace-nowrap"
           >
             Go to Dashboard
           </a>
@@ -275,10 +275,10 @@ axios({
       </header>
 
       {/* Main Layout Container */}
-      <main className="w-full max-w-7xl mx-auto px-6 py-10 space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-line pb-6">
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between border-b border-line pb-6">
           <div>
-            <h1 className="text-[26px] font-extrabold tracking-tight text-ink">
+            <h1 className="text-[22px] sm:text-[26px] font-extrabold tracking-tight text-ink">
               API Reference
             </h1>
             <p className="text-[13px] text-ink-3 mt-1.5">
@@ -287,7 +287,7 @@ axios({
             </p>
           </div>
           {/* Key Injector */}
-          <div className="flex items-center gap-2 bg-surface border border-line rounded-[10px] px-3.5 py-2 shadow-sm max-w-xs w-full">
+          <div className="flex items-center gap-2 bg-surface border border-line rounded-[10px] px-3.5 py-2 shadow-sm max-w-xs w-full lg:max-w-xs">
             <span className="text-[11.5px] font-semibold text-ink-3 whitespace-nowrap">
               API Key:
             </span>
@@ -301,9 +301,27 @@ axios({
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
-          {/* Sidebar Nav */}
-          <div className="space-y-4">
+        <div className="grid gap-6 lg:grid-cols-[220px_1fr] items-start">
+          {/* Mobile Selector Dropdown (visible only on mobile/tablet) */}
+          <div className="lg:hidden w-full">
+            <label className="text-[10.5px] font-bold uppercase tracking-wider text-ink-4 block mb-2">
+              Select Endpoint
+            </label>
+            <select
+              value={activeIdx}
+              onChange={(e) => setActiveIdx(Number(e.target.value))}
+              className="w-full bg-surface border border-line rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold text-ink focus:outline-none focus:ring-2 focus:ring-yellow-ring"
+            >
+              {SPEC.map((e, idx) => (
+                <option key={idx} value={idx}>
+                  {e.method} — {e.summary} ({e.path})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Desktop Sidebar Nav (hidden on mobile/tablet) */}
+          <div className="hidden lg:block space-y-4 shrink-0">
             <div>
               <span className="text-[10.5px] font-bold uppercase tracking-wider text-ink-4 select-none px-2.5">
                 Endpoints
@@ -313,7 +331,7 @@ axios({
                   <button
                     key={idx}
                     onClick={() => setActiveIdx(idx)}
-                    className={`w-full text-left px-2.5 py-2 rounded-[7px] text-[13px] font-medium transition-colors cursor-pointer flex items-center justify-between ${
+                    className={`w-full text-left px-2.5 py-2 rounded-[7px] text-[13px] font-medium transition-colors cursor-pointer flex items-center justify-between gap-2 ${
                       activeIdx === idx
                         ? "bg-cream text-yellow-ink font-semibold"
                         : "text-ink-2 hover:bg-surface-3 hover:text-ink"
@@ -321,7 +339,7 @@ axios({
                   >
                     <span className="truncate">{e.summary}</span>
                     <span
-                      className={`text-[8px] font-bold px-1.5 py-0.5 rounded-[4px] border ${
+                      className={`text-[8px] font-bold px-1.5 py-0.5 rounded-[4px] border shrink-0 ${
                         e.method === "POST"
                           ? "text-blue border-blue/20 bg-blue-bg"
                           : "text-green border-green/20 bg-cream"
@@ -336,11 +354,11 @@ axios({
           </div>
 
           {/* Code Playground Split */}
-          <div className="grid gap-8 md:grid-cols-[1.2fr_1fr] items-start">
+          <div className="grid gap-6 md:grid-cols-[1.2fr_1fr] items-start min-w-0">
             {/* Left Docs Column */}
-            <Card className="p-6 space-y-6">
+            <Card className="p-4 sm:p-6 space-y-6 min-w-0 overflow-hidden">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Badge
                     tone={
                       active.method === "POST" ? "info" : ("success" as any)
@@ -348,7 +366,7 @@ axios({
                   >
                     {active.method}
                   </Badge>
-                  <code className="text-[13px] font-bold text-ink bg-surface-3 px-2.5 py-1 rounded-[6px]">
+                  <code className="text-[12px] sm:text-[13px] font-bold text-ink bg-surface-3 px-2.5 py-1 rounded-[6px] break-all max-w-full">
                     {active.path}
                   </code>
                 </div>
@@ -370,9 +388,9 @@ axios({
                     {active.headers.map((h) => (
                       <div
                         key={h.name}
-                        className="py-2.5 flex justify-between items-start text-[12.5px]"
+                        className="py-2.5 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 text-[12.5px]"
                       >
-                        <div>
+                        <div className="min-w-0">
                           <span className="font-semibold text-ink">
                             {h.name}
                           </span>
@@ -381,11 +399,11 @@ axios({
                               required
                             </span>
                           )}
-                          <p className="text-[12px] text-ink-4 mt-0.5">
+                          <p className="text-[12px] text-ink-4 mt-0.5 break-words">
                             {h.desc}
                           </p>
                         </div>
-                        <span className="text-[11.5px] text-ink-3 bg-surface-2 px-2 py-0.5 rounded-[4px] border border-line">
+                        <span className="text-[11px] sm:text-[11.5px] text-ink-3 bg-surface-2 px-2 py-0.5 rounded-[4px] border border-line self-start sm:self-auto shrink-0 whitespace-nowrap">
                           {h.type}
                         </span>
                       </div>
@@ -404,9 +422,9 @@ axios({
                     {active.params.map((p) => (
                       <div
                         key={p.name}
-                        className="py-2.5 flex justify-between items-start text-[12.5px]"
+                        className="py-2.5 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 text-[12.5px]"
                       >
-                        <div>
+                        <div className="min-w-0">
                           <span className="font-semibold text-ink">
                             {p.name}
                           </span>
@@ -415,11 +433,11 @@ axios({
                               required
                             </span>
                           )}
-                          <p className="text-[12px] text-ink-4 mt-0.5">
+                          <p className="text-[12px] text-ink-4 mt-0.5 break-words">
                             {p.desc}
                           </p>
                         </div>
-                        <span className="text-[11.5px] text-ink-3 bg-surface-2 px-2 py-0.5 rounded-[4px] border border-line">
+                        <span className="text-[11px] sm:text-[11.5px] text-ink-3 bg-surface-2 px-2 py-0.5 rounded-[4px] border border-line self-start sm:self-auto shrink-0 whitespace-nowrap">
                           {p.type}
                         </span>
                       </div>
@@ -434,8 +452,8 @@ axios({
                   <h3 className="text-[11.5px] font-bold uppercase text-ink-3 tracking-wider mb-2 border-b border-line pb-1">
                     Payload Schema
                   </h3>
-                  <div className="bg-surface-2 border border-line rounded-[8px] p-3.5 overflow-x-auto">
-                    <pre className="text-[11.5px] text-ink-2 font-mono leading-relaxed">
+                  <div className="bg-surface-2 border border-line rounded-[8px] p-3.5 overflow-x-auto w-full">
+                    <pre className="text-[11px] sm:text-[11.5px] text-ink-2 font-mono leading-relaxed max-w-full">
                       {active.requestBody}
                     </pre>
                   </div>
@@ -444,13 +462,13 @@ axios({
             </Card>
 
             {/* Right Code Column */}
-            <div className="space-y-6">
-              <Card className="overflow-hidden border border-line-2">
-                <div className="bg-ink text-white px-4 py-2.5 flex items-center justify-between border-b border-white/10 select-none">
+            <div className="space-y-6 min-w-0">
+              <Card className="overflow-hidden border border-line-2 min-w-0">
+                <div className="bg-ink text-white px-4 py-2.5 flex flex-wrap gap-2 items-center justify-between border-b border-white/10 select-none">
                   <span className="text-[11px] font-bold tracking-wide uppercase text-white/55">
                     Request Example
                   </span>
-                  <div className="flex bg-white/10 rounded-[6px] p-0.5 text-[11.5px] font-medium">
+                  <div className="flex bg-white/10 rounded-[6px] p-0.5 text-[11px] sm:text-[11.5px] font-medium shrink-0">
                     {(["curl", "js", "node"] as const).map((l) => (
                       <button
                         key={l}
@@ -466,22 +484,22 @@ axios({
                     ))}
                   </div>
                 </div>
-                <div className="bg-ink p-4.5 overflow-x-auto min-h-[180px]">
-                  <pre className="text-[11.5px] text-yellow/95 font-mono leading-relaxed whitespace-pre select-all">
+                <div className="bg-ink p-4 overflow-x-auto min-h-[180px] w-full">
+                  <pre className="text-[11px] sm:text-[11.5px] text-yellow/95 font-mono leading-relaxed whitespace-pre select-all max-w-full">
                     {generateSnippet(active, lang)}
                   </pre>
                 </div>
               </Card>
 
               {active.responseBody && (
-                <Card className="overflow-hidden border border-line-2">
+                <Card className="overflow-hidden border border-line-2 min-w-0">
                   <div className="bg-ink text-white px-4 py-2.5 flex items-center justify-between border-b border-white/10 select-none">
                     <span className="text-[11px] font-bold tracking-wide uppercase text-white/55">
                       Response Output (200 Success)
                     </span>
                   </div>
-                  <div className="bg-ink p-4.5 overflow-x-auto">
-                    <pre className="text-[11.5px] text-green/95 font-mono leading-relaxed whitespace-pre select-all">
+                  <div className="bg-ink p-4 overflow-x-auto w-full">
+                    <pre className="text-[11px] sm:text-[11.5px] text-green/95 font-mono leading-relaxed whitespace-pre select-all max-w-full">
                       {active.responseBody}
                     </pre>
                   </div>
